@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="Giridhar Pai">
+  <meta name="description" content="A 3D Cyber War Room portfolio for Giridhar Pai, a Cyber Security enthusiast.">
+  <meta name="keywords" content="cybersecurity, 3d portfolio, three.js, webgl, security, Giridhar Pai">
+  <meta property="og:title" content="3D Cyber War Room - Giridhar Pai's Portfolio">
+  <meta property="og:description" content="An interactive 3D portfolio showcasing the projects and skills of Giridhar Pai in the field of Cyber Security.">
+  <meta property="og:image" content="images/profile.JPG">
+  <meta property="og:url" content="https://your-website-url.com">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>3D Cyber War Room - Ultra - Wide Screen </title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #0d1117;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #00e0ff;
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      z-index: 100;
+    }
+
+    /* allow uiCanvas to have a real rect, but invisible */
+    #uiCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      opacity: 0;
+      /* invisible, but still receives layout and can be measured */
+      pointer-events: none;
+      /* so it does not block clicks (we use it only as a buffer) */
+    }
+
+    /* helper canvases stay fully hidden */
+    #backWallCanvas,
+    #leftWallCanvas,
+    #rightWallCanvas,
+    #topWallCanvas {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="info">
+    Instructions: Click + Drag to Rotate View
+  </div>
+
+  <!-- Identity Verification Overlay -->
+  <div id="identity-overlay"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Inter',sans-serif;">
+    <h1 style="color:#00e0ff; font-family:'Orbitron'; margin-bottom:20px; text-shadow: 0 0 20px #00e0ff;">IDENTITY
+      VERIFICATION REQUIRED</h1>
+    <div
+      style="border: 2px solid #00e0ff; padding: 40px; box-shadow: 0 0 50px rgba(0,224,255,0.2); background: rgba(10,16,28,0.9); border-radius: 10px;">
+      <div style="display:flex; gap:10px;">
+        <select id="id-title"
+          style="background:#000; color:#00e0ff; border:1px solid #00e0ff; padding:10px; font-family:'Fira Code'; outline:none;">
+          <option>Mr.</option>
+          <option>Ms.</option>
+          <option>Mrs.</option>
+          <option>Dr.</option>
+          <option>Cmdr.</option>
+        </select>
+        <input type="text" id="id-name" placeholder="ENTER YOUR NAME"
+          style="background:#000; color:#fff; border:1px solid #00e0ff; padding:10px; font-family:'Fira Code'; outline:none; width: 250px;">
+        <button onclick="submitIdentity()"
+          style="background:#00e0ff; color:#000; border:none; padding:10px 30px; font-weight:bold; cursor:pointer; transition:all 0.3s; font-family:'Orbitron';">ACCESS</button>
+      </div>
+      <p style="color: #00e0ff; opacity: 0.6; font-size: 0.8rem; margin-top: 15px; text-align: center;">SECURE SERVER
+        CONNECTION ESTABLISHED</p>
+    </div>
+  </div>
+  <canvas id="uiCanvas"> </canvas>
+  <canvas id="backWallCanvas"> </canvas>
+  <canvas id="leftWallCanvas"> </canvas>
+  <canvas id="rightWallCanvas"> </canvas>
+  <canvas id="topWallCanvas"> </canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/renderers/CSS3DRenderer.js"></script>
+
+  <script>
+    // Firebase globals (kept as in original)
+    const appId = typeof appid !== 'undefined' ? appid : 'default-app-id';
+    const firebaseConfig = typeof firebaseconfig !== 'undefined' ? JSON.parse(firebaseconfig) : {};
+    const initialAuthToken = typeof initialauthtoken !== 'undefined' ? initialauthtoken : null;
+
+    // Scene globals
+    let scene, camera, renderer, cssRenderer;
+    let monitorGroup;
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+    const rotationSpeed = 0.002;
+
+    // Screen Texture Removed
+    let backWallTexture, leftWallTexture, rightWallTexture, topWallTexture;
+    let animationOffset = 0;
+
+    // Colors/constants
+    const NEONCYAN = '#00e0ff';
+    const NEONGREEN = '#00ff44';
+    const NEONRED = '#FF4444';
+    const NEONYELLOW = '#FFFF00';
+    const NEONPURPLE = '#9966FF';
+    const BGDARK = '#010305';
+
+    // --- SCREEN RESOLUTION CLARITY AND TEXT SIZE SCALING ---
+    // High resolution factor for canvas textures (improving clarity)
+    const TEXTURE_CLARITY_FACTOR = 2.0;
+
+    const WALLTEXTUREWIDTH = window.innerWidth * TEXTURE_CLARITY_FACTOR;
+    const WALLTEXTUREHEIGHT = window.innerHeight * TEXTURE_CLARITY_FACTOR;
+
+    // Scaling factor for font sizes to maintain visual size on the high-resolution canvas
+    const scale = window.devicePixelRatio / TEXTURE_CLARITY_FACTOR;
+    // --------------------------------------------------------
+
+    // --- TEXT SIZE ADJUSTMENTS (INCREASED FOR RIGHT WALL) ---
+    // Increased all base font sizes for the right wall to make them larger
+    const TITLE_FONT_SIZE = 40; // Increased from 30
+    const HEADER_FONT_SIZE = 24; // Increased from 16
+    const LOG_FONT_SIZE = 18; // Increased from 12
+    // --------------------------------------------------------
+
+
+    const LOADERDURATION = 3.0; // seconds
+
+    const BINARYFONTSIZE = 20; // This is an internal spacing constant, not a font size
+    let binaryGrid = [];
+
+    // ========== LOADER ==========
+
+    function drawLoaderShapes(ctx, cx, cy, size, t) {
+      const pathColor = '#2F3545';
+      const dotColor = '#5628EE';
+
+      ctx.save();
+      ctx.lineWidth = Math.max(6, size * 0.12);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Circle
+      const circleX = cx - size * 1.2;
+      const circleY = cy;
+      const circleR = size * 0.45;
+      const circleCirc = 2 * Math.PI * circleR;
+      const circleDash = circleCirc * 0.75;
+      const circleGap = circleCirc - circleDash;
+      const circleProgress = (t % LOADERDURATION) / LOADERDURATION;
+
+      ctx.setLineDash([circleDash, circleGap, circleDash, circleGap]);
+      ctx.strokeStyle = pathColor;
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, circleR, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      const dotAngle = circleProgress * 2 * Math.PI;
+      let dotX = circleX + Math.cos(dotAngle) * circleR;
+      let dotY = circleY + Math.sin(dotAngle) * circleR;
+      ctx.fillStyle = dotColor;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, Math.max(4, size * 0.06), 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Triangle
+      const triX = cx;
+      const triY = cy;
+      const triSize = size * 0.9;
+
+      const p1 = { x: triX, y: triY - triSize * 0.45 };
+      const p2 = { x: triX + triSize * 0.9, y: triY + triSize * 0.45 };
+      const p3 = { x: triX - triSize * 0.9, y: triY + triSize * 0.45 };
+
+      const triPerim = Math.hypot(p1.x - p2.x, p1.y - p2.y) * 3;
+      const triDash = triPerim * 0.65;
+      const triGap = triPerim - triDash;
+      const triProgress = (t % LOADERDURATION) / LOADERDURATION;
+
+      ctx.setLineDash([triDash, triGap, triDash, triGap]);
+      ctx.strokeStyle = pathColor;
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.lineTo(p3.x, p3.y);
+      ctx.closePath();
+      ctx.stroke();
+
+      const triTotal = triPerim;
+      const triPos = triProgress * triTotal;
+
+      function pointAlongTriangle(pos) {
+        const edge = Math.floor((pos / triTotal) * 3);
+        const local = pos - (edge * triTotal) / 3;
+        const edgeLen = triTotal / 3;
+        let a, b;
+        if (edge === 0) { a = p1; b = p2; }
+        else if (edge === 1) { a = p2; b = p3; }
+        else { a = p3; b = p1; }
+        const ratio = Math.min(1, local / edgeLen);
+        return { x: a.x + (b.x - a.x) * ratio, y: a.y + (b.y - a.y) * ratio };
+      }
+
+      const triDot = pointAlongTriangle(triPos);
+      ctx.fillStyle = dotColor;
+      ctx.beginPath();
+      ctx.arc(triDot.x, triDot.y, Math.max(4, size * 0.06), 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Rectangle
+      const rectX = cx + size * 1.2;
+      const rectY = cy;
+      const rectW = size * 0.9;
+      const rectH = size * 0.9;
+      const rectLeft = rectX - rectW / 2;
+      const rectTop = rectY - rectH / 2;
+      const rectPerim = 2 * (rectW + rectH);
+      const rectDash = rectPerim * 0.75;
+      const rectGap = rectPerim - rectDash;
+      const rectProgress = (t % LOADERDURATION) / LOADERDURATION;
+
+      ctx.setLineDash([rectDash, rectGap, rectDash, rectGap]);
+      ctx.strokeStyle = pathColor;
+      ctx.beginPath();
+      ctx.rect(rectLeft, rectTop, rectW, rectH);
+      ctx.stroke();
+
+      function pointAlongRect(pos) {
+        let p = pos;
+        const topLen = rectW;
+        const rightLen = rectH;
+        const bottomLen = rectW;
+        const leftLen = rectH;
+        if (p < topLen) return { x: rectLeft + p, y: rectTop };
+        p -= topLen;
+        if (p < rightLen) return { x: rectLeft + rectW, y: rectTop + p };
+        p -= rightLen;
+        if (p < bottomLen) return { x: rectLeft + rectW - p, y: rectTop + rectH };
+        p -= bottomLen;
+        return { x: rectLeft, y: rectTop + rectH - p };
+      }
+
+      const rectPos = rectProgress * rectPerim;
+      const rectDot = pointAlongRect(rectPos);
+      ctx.fillStyle = dotColor;
+      ctx.beginPath();
+      ctx.arc(rectDot.x, rectDot.y, Math.max(4, size * 0.06), 0, 2 * Math.PI);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawLoadingScreen(ctx, width, height, offsetSeconds) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width, height);
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      const loadingText = 'Initializing Security Protocols...';
+      const charsToShow = Math.min(
+        Math.floor(offsetSeconds * 5),
+        loadingText.length
+      );
+
+      ctx.textAlign = 'center';
+      // Font size (currently 30px) uses the scale factor
+      ctx.font = `bold ${30 / scale}px Inter, sans-serif`;
+      ctx.fillStyle = NEONCYAN;
+      ctx.fillText(
+        loadingText.substring(0, charsToShow),
+        centerX,
+        centerY - 140
+      );
+
+      // Progress bar
+      ctx.fillStyle = NEONCYAN;
+      ctx.fillRect(centerX - 100, centerY + 50, 200, 10);
+      const progress = (offsetSeconds % LOADERDURATION) / LOADERDURATION;
+      ctx.fillStyle = NEONGREEN;
+      ctx.fillRect(centerX - 100, centerY + 50, 200 * progress, 10);
+
+      // Loader shapes
+      const loaderSize = Math.min(width, height) * 0.12; // slightly bigger
+      drawLoaderShapes(ctx, centerX, centerY - 20, loaderSize, offsetSeconds);
+    }
+
+    // ========== SCREEN TEXTURE FUNCTIONS REMOVED ==========
+
+    // ========== WALL DRAWING HELPERS (FONT SIZES CORRECTLY SCALED) ==========
+
+    function drawNetVis(ctx, x, y, width, height, offset) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.shadowBlur = 5;
+      // Scaled TITLE_FONT_SIZE (40px)
+      ctx.font = (TITLE_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONCYAN;
+      ctx.textAlign = 'center';
+      // MODIFICATION: Moved text from 40px down to 80px down
+      ctx.fillText('ACTIVE NETWORK TOPOLOGY', width / 2, 80);
+
+      // MODIFICATION: Moved radar center down to 0.4 from 0.35 to compensate for lower title
+      const mapCenterY = height * 0.4;
+      const radius = width * 0.4;
+      const numNodes = 10;
+
+      ctx.shadowColor = NEONGREEN;
+      ctx.lineWidth = 2;
+
+      for (let i = 0; i < numNodes; i++) {
+        const angle = (i * Math.PI * 2) / numNodes + offset * 0.5;
+        const nodeX = width / 2 + Math.cos(angle) * radius;
+        const nodeY = mapCenterY + Math.sin(angle) * radius;
+
+        ctx.strokeStyle = 'rgba(0, 255, 68, 0.15)';
+        ctx.beginPath();
+        ctx.moveTo(width / 2, mapCenterY);
+        ctx.lineTo(nodeX, nodeY);
+        ctx.stroke();
+
+        const pulse = (Math.sin(offset * 5 + i) * 1.5 + 0.5) * 0.5 + 0.5;
+        const nodeColor = i % 2 === 0 ? NEONRED : NEONGREEN;
+        ctx.fillStyle = nodeColor;
+        ctx.shadowColor = nodeColor;
+        ctx.shadowBlur = 8 * pulse;
+        ctx.beginPath();
+        ctx.arc(nodeX, nodeY, 6 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = NEONCYAN;
+      ctx.shadowColor = NEONCYAN;
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.arc(width / 2, mapCenterY, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowBlur = 5;
+      // Scaled HEADER_FONT_SIZE (24px)
+      ctx.font = (HEADER_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillText('CPU IO METRICS', width / 2, height * 0.75); // Moved down slightly
+
+      const barHeight = height * 0.2;
+      const barY = height * 0.8; // Moved down slightly
+      const barW = 30;
+      const barCount = 5;
+      const totalBarWidth = barCount * barW + (barCount - 1) * 15;
+      const startX = (width - totalBarWidth) / 2;
+
+      for (let i = 0; i < barCount; i++) {
+        const barX = startX + i * (barW + 15);
+        const statusRatio =
+          (Math.sin(offset * 0.9 + i * 0.7) * 0.5 + 0.5) * 0.8 + 0.1;
+        const currentHeight = barHeight * statusRatio;
+        let barColor;
+        if (statusRatio > 0.7) barColor = NEONRED;
+        else if (statusRatio > 0.4) barColor = NEONCYAN;
+        else barColor = NEONGREEN;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.fillRect(barX, barY, barW, barHeight);
+
+        ctx.fillStyle = barColor;
+        ctx.shadowColor = barColor;
+        ctx.fillRect(barX, barY + barHeight - currentHeight, barW, currentHeight);
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = NEONCYAN;
+      // Scaled LOG_FONT_SIZE (18px)
+      ctx.font = (LOG_FONT_SIZE / scale) + 'px monospace';
+      for (let i = 0; i < barCount; i++) {
+        const barX = startX + i * (barW + 15);
+        ctx.fillText('Pi ' + (i + 1), barX + barW / 2, height - 10);
+      }
+
+      ctx.restore();
+    }
+
+    function drawLogStream(ctx, x, y, width, height, offset) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.shadowBlur = 5;
+      ctx.strokeStyle = NEONRED;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = NEONRED;
+      ctx.strokeRect(0, 0, width, height);
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = NEONRED;
+      // Scaled 30px
+      ctx.font = `bold ${30 / scale}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText('ACCESS DENIED', width / 2, 70);
+
+      // Scaled LOG_FONT_SIZE (18px)
+      ctx.font = (LOG_FONT_SIZE / scale) + 'px monospace';
+      ctx.textAlign = 'left';
+      const chars = '0123456789ABCDEF';
+      // Line height increased for larger font
+      const lineHeight = 18;
+      const startY = 100;
+
+      for (let row = 0; row < height / lineHeight; row++) {
+        const lineY = startY + row * lineHeight;
+        const effectiveY =
+          lineY + ((5 + row * lineHeight + offset * 10) % (height - startY));
+        if (effectiveY < startY) continue;
+
+        let line;
+        if (row % 5 === 0) {
+          ctx.fillStyle = NEONCYAN;
+          line =
+            'WARNING ' +
+            Date.now().toString().slice(-5) +
+            ' INTRUSIONATTEMPT SRC212.112.1.98 - PORT443...';
+        } else if (row % 7 === 0) {
+          ctx.fillStyle = NEONRED;
+          line =
+            'CRITICAL KERNEL PANIC ' +
+            Math.random().toString(16).substring(2, 8).toUpperCase() +
+            ' FAILED EXEC...';
+        } else {
+          ctx.fillStyle = NEONPURPLE;
+          line =
+            '0x' +
+            Math.floor(Math.random() * 0xffffff)
+              .toString(16)
+              .padStart(6, '0');
+          for (let j = 0; j < 8; j++) {
+            line += chars[Math.floor(Math.random() * chars.length)];
+          }
+          line += Math.random().toString(36).substring(2, 10).padEnd(8, chars[0]);
+          while (line.length < width / 9 - 5) {
+            line += chars[Math.floor(Math.random() * chars.length)];
+          }
+        }
+
+        ctx.fillText(line, 20, effectiveY);
+      }
+
+      ctx.restore();
+    }
+
+    function drawSecurityIndicators(ctx, x, y, width, height, offset) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.shadowBlur = 5;
+      // Scaled TITLE_FONT_SIZE (40px)
+      ctx.font = (TITLE_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONCYAN;
+      ctx.textAlign = 'center';
+      // Title is now at 80px down
+      ctx.fillText('SYSTEM SECURITY STATUS', width / 2, 80);
+
+      // Adjusted radar position to compensate for lower title
+      const radarSize = width * 0.4;
+      const radarCenterX = width / 2;
+      const radarCenterY = height * 0.4; // Moved down from 0.35
+
+      ctx.strokeStyle = 'rgba(0, 224, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(radarCenterX, radarCenterY, radarSize, 0, Math.PI * 2);
+      ctx.moveTo(radarCenterX, radarCenterY - radarSize);
+      ctx.lineTo(radarCenterX, radarCenterY + radarSize);
+      ctx.moveTo(radarCenterX - radarSize, radarCenterY);
+      ctx.lineTo(radarCenterX + radarSize, radarCenterY);
+      ctx.stroke();
+
+      ctx.strokeStyle = NEONCYAN;
+      ctx.lineWidth = 4;
+      ctx.shadowColor = NEONCYAN;
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(radarCenterX, radarCenterY);
+      const lineAngle = offset * 2.5;
+      const lineX = radarCenterX + Math.cos(lineAngle) * radarSize;
+      const lineY = radarCenterY + Math.sin(lineAngle) * radarSize;
+      ctx.lineTo(lineX, lineY);
+      ctx.stroke();
+
+      const blipAngle = Math.PI / 4;
+      const blipX = radarCenterX + Math.cos(blipAngle) * radarSize * 0.8;
+      const blipY = radarCenterY + Math.sin(blipAngle) * radarSize * 0.8;
+      ctx.fillStyle = NEONRED;
+      ctx.shadowColor = NEONRED;
+      ctx.shadowBlur = 10;
+      ctx.globalAlpha = 1.0;
+      const blipPulse = Math.sin(offset * 15) * 0.5 + 0.5;
+      ctx.beginPath();
+      ctx.arc(blipX, blipY, 8 * blipPulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowBlur = 5;
+      // Scaled HEADER_FONT_SIZE (24px)
+      ctx.font = (HEADER_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONGREEN;
+      ctx.fillText('ENCRYPTION ACTIVE', width / 2, height * 0.75); // Moved down from 0.7
+
+      // Scaled 40px
+      ctx.font = `${40 / scale}px monospace`;
+      const lockState = Math.floor(offset * 10) % 2 === 0;
+      ctx.fillStyle = lockState ? NEONCYAN : NEONGREEN;
+      ctx.shadowColor = lockState ? NEONCYAN : NEONGREEN;
+      ctx.shadowBlur = lockState ? 15 : 5;
+      ctx.fillText(lockState ? '🔒' : '🔓', width / 2, height * 0.95); // Moved down from 0.9
+
+      ctx.restore();
+    }
+
+    function drawBackWall(ctx, width, height, offset) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = BGDARK;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = 'rgba(0, 224, 255, 0.05)';
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.5;
+      for (let i = 0; i < width; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, height);
+        ctx.stroke();
+      }
+      for (let j = 0; j < height; j += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, j);
+        ctx.lineTo(width, j);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1.0;
+
+      const colWidth = width / 3;
+      drawNetVis(ctx, 0, 0, colWidth, height, offset);
+      drawLogStream(ctx, colWidth, 0, colWidth, height, offset);
+      drawSecurityIndicators(ctx, colWidth * 2, 0, colWidth, height, offset);
+
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = NEONCYAN;
+      ctx.shadowColor = NEONCYAN;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(colWidth, 0);
+      ctx.lineTo(colWidth, height);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(colWidth * 2, 0);
+      ctx.lineTo(colWidth * 2, height);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function drawLeftWall(ctx, width, height, offset) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = BGDARK;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.shadowBlur = 5;
+      ctx.textAlign = 'center';
+      // Scaled TITLE_FONT_SIZE (40px)
+      ctx.font = (TITLE_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONYELLOW;
+      ctx.fillText('HISTORICAL THREAT TRENDS', width / 2, 80);
+
+      const graphHeight = height * 0.35;
+      const graphY = 120;
+      const graphPadding = 50;
+
+      ctx.strokeStyle = NEONCYAN;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = NEONCYAN;
+      ctx.beginPath();
+      ctx.moveTo(graphPadding, graphY + graphHeight / 2);
+      for (let x = graphPadding; x < width - graphPadding; x++) {
+        const ratio = (x - graphPadding) / (width - 2 * graphPadding);
+        const y =
+          graphY +
+          graphHeight / 2 +
+          Math.sin(ratio * Math.PI * 4 + offset * 5) * (graphHeight / 3) +
+          (1 - ratio) * 0.5;
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Scaled LOG_FONT_SIZE (18px)
+      ctx.font = (LOG_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONCYAN;
+      ctx.fillText(
+        'Packet Loss Over 24 Hours Spike Detected',
+        width / 2,
+        graphY + graphHeight + 30
+      );
+
+      const barChartY = graphY + graphHeight + 100;
+      const barChartHeight = height * 0.35;
+      const barCount = 4;
+      const barW = 80;
+      const gap = 50;
+      const totalWidth = barCount * barW + (barCount - 1) * gap;
+      const startX = (width - totalWidth) / 2;
+
+      // Scaled HEADER_FONT_SIZE (24px)
+      ctx.font = (HEADER_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONGREEN;
+      ctx.fillText('TOP ATTACK VECTORS 7 DAYS', width / 2, barChartY - 20);
+
+      const labels = ['DDoS', 'SQLI', 'XSS', 'Malware'];
+      const data = [0.85, 0.6, 0.4, 0.7];
+
+      for (let i = 0; i < barCount; i++) {
+        const barX = startX + i * (barW + gap);
+        const barH = barChartHeight * data[i];
+        ctx.fillStyle = NEONGREEN;
+        ctx.shadowColor = NEONGREEN;
+        if (i === 0) {
+          ctx.fillStyle = NEONRED;
+          ctx.shadowColor = NEONRED;
+          ctx.shadowBlur = 15;
+        } else {
+          ctx.shadowBlur = 5;
+        }
+        ctx.fillRect(
+          barX,
+          barChartY + barChartHeight - barH,
+          barW,
+          barH
+        );
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = NEONCYAN;
+        // Scaled LOG_FONT_SIZE (18px)
+        ctx.font = (LOG_FONT_SIZE / scale) + 'px monospace';
+        ctx.fillText(labels[i], barX + barW / 2, barChartY + barChartHeight + 30);
+      }
+    }
+
+    // Global
+    let visitorName = "UNKNOWN AGENT";
+
+    function submitIdentity() {
+      const title = document.getElementById('id-title').value;
+      const name = document.getElementById('id-name').value;
+      if (name.trim() === "") return alert("IDENTIFICATION REQUIRED");
+
+      // Boss Logic
+      const cleanName = name.trim().toLowerCase();
+      if (cleanName === "giridhar pai" || cleanName === "giri") {
+        visitorName = "BOSS";
+      } else {
+        visitorName = title + " " + name.toUpperCase();
+      }
+
+      document.getElementById('identity-overlay').style.display = 'none';
+
+      // Pass to iframe
+      const frame = document.querySelector('iframe');
+      if (frame) frame.contentWindow.postMessage({ type: 'VISITOR_ID', name: visitorName }, '*');
+    }
+
+    // Inside Right Wall Draw
+    function drawRightWall(ctx, width, height, offset) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = BGDARK;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.shadowBlur = 5;
+      ctx.textAlign = 'center';
+      // Scaled TITLE_FONT_SIZE (40px) - Increased
+      ctx.font = 'bold ' + (TITLE_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.fillStyle = NEONRED;
+      ctx.fillText('FIREWALL INTERCEPT LOG', width / 2, 80);
+
+      const logStartY = 120;
+      // Line height increased to accommodate larger font
+      const lineHeight = 28; // Increased from 18
+      const maxRows = 30;
+
+      // Scaled HEADER_FONT_SIZE (24px) - Increased
+      ctx.font = (HEADER_FONT_SIZE / scale) + 'px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = NEONCYAN;
+      ctx.fillText('TIME', 20, logStartY);
+      ctx.fillText('SRC IP', 150, logStartY);
+      ctx.fillText('DST PORT', 350, logStartY);
+      ctx.fillText('ACTION', 500, logStartY);
+      ctx.fillText('PROTOCOL', 650, logStartY);
+
+      // Scaled LOG_FONT_SIZE (18px) - Increased
+      ctx.font = (LOG_FONT_SIZE / scale) + 'px monospace';
+
+      for (let i = 0; i < maxRows; i++) {
+        const rowStart = logStartY + lineHeight;
+        const effectiveY =
+          rowStart + ((i * lineHeight + offset * 10) % (maxRows * lineHeight)) + 5;
+        if (effectiveY < rowStart) continue;
+
+        let action, color;
+        const rnd = Math.random();
+        if (rnd < 0.1) {
+          action = 'DENY CRIT';
+          color = NEONRED;
+        } else if (rnd < 0.3) {
+          action = 'DENY';
+          color = NEONYELLOW;
+        } else {
+          action = 'ALLOW';
+          color = NEONPURPLE;
+        }
+
+        ctx.fillStyle = color;
+        const timeStr = new Date(Date.now() - i * 10000)
+          .toTimeString()
+          .slice(0, 8);
+        const ipStr = '192.168.1.' + (i % 255);
+        const srcIp = i % 3 === 0 ? '212.112.1.' + (i % 255) : ipStr;
+        const port = 80 + (i % 5);
+
+        ctx.fillText(timeStr, 20, effectiveY);
+        ctx.fillText(srcIp, 150, effectiveY);
+        ctx.fillText(port, 350, effectiveY);
+        ctx.fillText(action, 500, effectiveY);
+        ctx.fillText(i % 2 === 0 ? 'TCP' : 'UDP', 650, effectiveY);
+      }
+
+      // WELCOME MESSAGE (Refined - Blue & Purple)
+      ctx.textAlign = 'right';
+      const textX = width - 150; // Moved left as requested
+
+      // ACCESS GRANTED - Purple
+      ctx.shadowColor = '#b026ff';
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#b026ff';
+      ctx.font = 'bold ' + (32 / scale) + 'px Orbitron';
+      ctx.fillText("ACCESS GRANTED", textX, height * 0.4);
+
+      // WELCOME - Blue
+      ctx.shadowColor = '#2679ff';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#2679ff';
+      ctx.font = 'bold ' + (70 / scale) + 'px Orbitron';
+      ctx.fillText("WELCOME", textX, height * 0.5);
+
+      // Subtext
+      ctx.shadowColor = '#2679ff';
+      ctx.shadowBlur = 5;
+      ctx.fillStyle = "#ffffff";
+      ctx.font = (22 / scale) + 'px Inter';
+      ctx.fillText("WITH DUE RESPECT", textX, height * 0.60);
+
+      // PASSCODE/NAME - Purple/Blue Mix
+      ctx.shadowColor = '#d500f9';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#d500f9';
+      ctx.font = 'bold ' + (50 / scale) + 'px Courier New';
+      ctx.fillText(visitorName, textX, height * 0.70);
+
+      ctx.shadowBlur = 0;
+    }
+
+    function drawTopWall(ctx, width, height, offset) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = BGDARK;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.shadowBlur = 5;
+      ctx.textAlign = 'left';
+
+      const BINARYFONTSIZE_ADJ = 16;
+      const cols = Math.floor(width / BINARYFONTSIZE_ADJ);
+      const rows = Math.floor(height / BINARYFONTSIZE_ADJ);
+      const binaryColor = 'rgba(0, 224, 255, 0.5)';
+      const hackedColor = NEONRED;
+
+      // FIX: Rerandomize binary grid periodically to ensure HACKED status changes
+      if (binaryGrid.length === 0 || Math.floor(offset * 60) % 180 === 0) {
+        binaryGrid = [];
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            binaryGrid.push({
+              char: Math.random() < 0.5 ? '0' : '1',
+              // Increased chance to 2% (was 0.5%)
+              hacked: Math.random() < 0.02
+            });
+          }
+        }
+      }
+
+      // Binary background drawing loop
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const index = r * cols + c;
+          if (index >= binaryGrid.length) continue;
+
+          const x = c * BINARYFONTSIZE_ADJ;
+          const y = r * BINARYFONTSIZE_ADJ + BINARYFONTSIZE_ADJ;
+          const item = binaryGrid[index];
+
+          // FIX: Draw HACKED text if flag is true
+          if (item.hacked) {
+            ctx.fillStyle = hackedColor;
+            ctx.shadowColor = hackedColor;
+            ctx.shadowBlur = 10;
+            // Scaled 12px for HACKED text
+            ctx.font = `${12 / scale}px monospace`;
+            ctx.fillText('HACKED', x, y);
+          } else {
+            ctx.fillStyle = binaryColor;
+            ctx.shadowColor = NEONCYAN;
+            ctx.shadowBlur = 0; // Ensure no lingering shadow from HACKED text
+            // Scaled 10px base for binary background
+            ctx.font = (10 / scale) + 'px Inter, sans-serif';
+            ctx.fillText(item.char, x, y);
+          }
+
+          // Binary character mutation logic
+          if (Math.random() < 0.02) {
+            item.char = Math.random() < 0.5 ? '0' : '1';
+          }
+        }
+      }
+
+      // Main title drawing
+      ctx.textAlign = 'center';
+      // Scaled 80px for main title (no change)
+      ctx.font = `bold ${80 / scale}px Inter, sans-serif`;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.shadowColor = '#FFFFFF';
+      ctx.shadowBlur = 25;
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+      ctx.fillText('WHITEHATWOLF', centerX, centerY);
+
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = NEONCYAN;
+      ctx.fillStyle = NEONCYAN;
+      // Scaled 24px for subtitle (Increased from 18px)
+      ctx.font = (24 / scale) + 'px Inter, sans-serif';
+      ctx.fillText('SYSTEM OVERRIDE', centerX, centerY + 60);
+      ctx.shadowBlur = 0;
+    }
+
+    function createWallTexture(canvasId, drawerFunction) {
+      const canvas = document.getElementById(canvasId);
+      canvas.width = WALLTEXTUREWIDTH;
+      canvas.height = WALLTEXTUREHEIGHT;
+      const ctx = canvas.getContext('2d');
+
+      drawerFunction(ctx, WALLTEXTUREWIDTH, WALLTEXTUREHEIGHT, 0);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.repeat.set(1, 1);
+      texture.needsUpdate = true;
+      return texture;
+    }
+
+    // ========== THREE.JS INIT ==========
+
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 10, 75);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x0d1117, 1);
+      renderer.useLegacyLights = false;
+      // WebGL Renderer must be on top but interactable? No, standard is CSS first then WebGL or vice versa
+      // We will put CSS on top for interaction, so WebGL needs to be behind?
+      // Actually CSS3D is usually put on top to capture events on iframes.
+      renderer.domElement.style.position = 'absolute';
+      renderer.domElement.style.top = '0';
+      renderer.domElement.style.zIndex = '1';
+      renderer.domElement.style.pointerEvents = 'none'; // Pass through clicks to CSS3D if there are gaps? 
+      // But we need to rotate scene using dragging on the background.
+      // Strategy: CSS3D on top, but pointer-events: none on container, auto on iframes.
+
+      document.body.appendChild(renderer.domElement);
+
+      // CSS3D Renderer for Iframe
+      cssRenderer = new THREE.CSS3DRenderer();
+      cssRenderer.setSize(window.innerWidth, window.innerHeight);
+      cssRenderer.domElement.style.position = 'absolute';
+      cssRenderer.domElement.style.top = '0';
+      cssRenderer.domElement.style.zIndex = '2'; // Top
+      cssRenderer.domElement.style.pointerEvents = 'none'; // Allow clicks to pass through empty areas
+      document.body.appendChild(cssRenderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0x444444, 5);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+      directionalLight.position.set(5, 50, 50);
+      scene.add(directionalLight);
+
+      const pointLightGroup = new THREE.Group();
+      pointLightGroup.name = 'pointLightGroup';
+      pointLightGroup.position.y = 30;
+      scene.add(pointLightGroup);
+
+      const rotatingLight = new THREE.PointLight(0xffffff, 60, 120);
+      rotatingLight.name = 'rotatingLight';
+      rotatingLight.position.set(0, 5, 20);
+      pointLightGroup.add(rotatingLight);
+
+      // High-Tech Screen Setup
+      const monitorHeight = 33;
+      const monitorWidth = 100;
+
+      // 1. Interactive Screen (Front) - Full HD (Balanced Clarity)
+      const pixelWidth = 1920;
+      const pixelHeight = 634; // Matches 100:33 aspect ratio
+
+      const iframeDiv = document.createElement('div');
+      iframeDiv.style.width = pixelWidth + 'px';
+      iframeDiv.style.height = pixelHeight + 'px';
+      iframeDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+      iframeDiv.style.pointerEvents = 'auto';
+
+      // High-tech styling (Scaled up for 4K)
+      iframeDiv.style.border = '10px solid #00e0ff'; // Thicker border for 4K
+      iframeDiv.style.boxShadow = '0 0 80px rgba(0, 224, 255, 0.6)'; // Larger glow radius
+      iframeDiv.style.borderRadius = '15px';
+
+      // CRITICAL: Hide the back of the iframe so we see the RGB backing instead
+      iframeDiv.style.backfaceVisibility = 'hidden';
+      iframeDiv.style.webkitBackfaceVisibility = 'hidden';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'P0rtfoli0.html';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframeDiv.appendChild(iframe);
+
+      const object = new THREE.CSS3DObject(iframeDiv);
+      object.position.set(0, 30, -15);
+
+      // Scale down 4K pixels to World Units (100x33)
+      // 100 units / 3840 pixels = 0.02604...
+      object.scale.set(monitorWidth / pixelWidth, monitorHeight / pixelHeight, 1);
+      scene.add(object);
+
+      // 2. High-Tech Backing Box (Cover)
+      // BoxGeometry for a solid "Screen Chassis" look
+      const backingGeometry = new THREE.BoxGeometry(monitorWidth + 1, monitorHeight + 1, 1);
+
+      // Dynamic RGB Shader
+      const backingMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 }
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float time;
+          varying vec2 vUv;
+          
+          void main() {
+            // Cyberpunk RGB Patterns
+            vec3 color = 0.5 + 0.5 * cos(time + vUv.xyx * 3.0 + vec3(0, 2, 4));
+            
+            // Tech lines
+            float scan = sin(vUv.y * 50.0 - time * 5.0) * 0.1;
+            float grid = step(0.95, fract(vUv.x * 20.0)) * 0.2;
+            
+            color += vec3(scan + grid);
+            
+            // Darker edge vignette
+            float dist = distance(vUv, vec2(0.5));
+            color *= (1.0 - dist * 0.8);
+
+            gl_FragColor = vec4(color, 1.0);
+          }
+        `,
+        side: THREE.FrontSide, // Only show front faces of the box
+        transparent: true
+      });
+
+      const backingMesh = new THREE.Mesh(backingGeometry, backingMaterial);
+      backingMesh.name = 'screenBacking'; // For animation updates
+      backingMesh.position.set(0, 30, -15.5); // Center of box is behind the screen plane
+      scene.add(backingMesh);
+
+      // 3. Ambient RGB Glow (Backlight)
+      const backLight = new THREE.PointLight(0xff0000, 2, 50);
+      backLight.name = 'screenBackLight';
+      backLight.position.set(0, 30, -20); // Behind the backing
+      scene.add(backLight);
+
+      monitorGroup = new THREE.Group();
+      monitorGroup.add(object);
+      monitorGroup.add(backingMesh);
+      monitorGroup.add(backLight);
+
+      monitorGroup.position.y = 0;
+      scene.add(monitorGroup);
+
+
+      // Pedestal / floor / room
+      const pedestalRadius = 20;
+      const pedestalThickness = 3;
+      const floorY = -pedestalThickness / 2;
+
+      const baseGeometry = new THREE.CylinderGeometry(
+        pedestalRadius,
+        pedestalRadius,
+        pedestalThickness,
+        64
+      );
+      const baseMaterial = new THREE.MeshStandardMaterial({
+        color: 0x222222,
+        metalness: 0.9,
+        roughness: 0.4,
+        side: THREE.DoubleSide
+      });
+      const pedestalBase = new THREE.Mesh(baseGeometry, baseMaterial);
+      pedestalBase.position.y = floorY;
+      scene.add(pedestalBase);
+
+      const stageSpotlight = new THREE.SpotLight(
+        0x00ffff,
+        50,
+        40,
+        Math.PI / 8,
+        0.5
+      );
+      stageSpotlight.position.set(0, pedestalThickness / 2 - 0.5, 0);
+      stageSpotlight.target.position.set(0, 10, 0);
+      scene.add(stageSpotlight);
+      scene.add(stageSpotlight.target);
+
+      const roomSize = 100;
+      const wallHeight = 60;
+
+      backWallTexture = createWallTexture('backWallCanvas', drawBackWall);
+      leftWallTexture = createWallTexture('leftWallCanvas', drawLeftWall);
+      rightWallTexture = createWallTexture('rightWallCanvas', drawRightWall);
+      topWallTexture = createWallTexture('topWallCanvas', drawTopWall);
+
+      const backWallMaterial = new THREE.MeshBasicMaterial({
+        map: backWallTexture,
+        side: THREE.DoubleSide
+      });
+      const leftWallMaterial = new THREE.MeshBasicMaterial({
+        map: leftWallTexture,
+        side: THREE.DoubleSide
+      });
+      const rightWallMaterial = new THREE.MeshBasicMaterial({
+        map: rightWallTexture,
+        side: THREE.DoubleSide
+      });
+      const topWallMaterial = new THREE.MeshBasicMaterial({
+        map: topWallTexture,
+        side: THREE.DoubleSide
+      });
+
+      const floorGeometry = new THREE.PlaneGeometry(roomSize * 2, roomSize * 2);
+      floorGeometry.rotateX(-Math.PI / 2);
+      const floorMaterial = new THREE.MeshStandardMaterial({
+        color: 0x0f0f0f,
+        metalness: 0.9,
+        roughness: 0.1
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.y = floorY;
+      scene.add(floor);
+
+      const gridHelper = new THREE.GridHelper(
+        roomSize * 2,
+        40,
+        0x00ffcc,
+        0x00ffcc
+      );
+      gridHelper.position.y = floorY + 0.01;
+      gridHelper.material.opacity = 0.4;
+      gridHelper.material.transparent = true;
+      scene.add(gridHelper);
+
+      const roofGeometry = new THREE.PlaneGeometry(roomSize * 2, roomSize * 2);
+      roofGeometry.rotateX(Math.PI / 2);
+      const roof = new THREE.Mesh(roofGeometry, topWallMaterial);
+      roof.position.set(0, wallHeight + floorY, 0);
+      scene.add(roof);
+
+      const backWallGeometry = new THREE.PlaneGeometry(
+        roomSize * 2,
+        wallHeight
+      );
+      const backWall = new THREE.Mesh(backWallGeometry, backWallMaterial);
+      backWall.position.set(0, wallHeight / 2 + floorY, -roomSize);
+      scene.add(backWall);
+
+      const leftWallGeometry = new THREE.PlaneGeometry(
+        roomSize * 2,
+        wallHeight
+      );
+      leftWallGeometry.rotateY(Math.PI / 2);
+      const leftWall = new THREE.Mesh(leftWallGeometry, leftWallMaterial);
+      leftWall.position.set(-roomSize, wallHeight / 2 + floorY, 0);
+      scene.add(leftWall);
+
+      const rightWallGeometry = new THREE.PlaneGeometry(
+        roomSize * 2,
+        wallHeight
+      );
+      rightWallGeometry.rotateY(-Math.PI / 2);
+      const rightWall = new THREE.Mesh(rightWallGeometry, rightWallMaterial);
+      rightWall.position.set(roomSize, wallHeight / 2 + floorY, 0);
+      scene.add(rightWall);
+
+      // Controls
+      // Attach to cssRenderer.domElement because it is on top, or both?
+      // Since cssRenderer container has pointer-events: none, events go to iframe or pass through to underlying...
+      // wait, underlying is WebGL (z=1), CSS is z=2.
+      // If pointer-events:none on CSS container, events fall to WebGL renderer.
+      // So listen on window or renderer usually works.
+
+      window.addEventListener('mousedown', onMouseDown, false);
+      window.addEventListener('mousemove', onMouseMove, false);
+      window.addEventListener('mouseup', onMouseUp, false);
+
+      window.addEventListener('touchstart', onTouchStart, false);
+      window.addEventListener('touchend', onTouchEnd, false);
+      window.addEventListener('touchmove', onTouchMove, false);
+
+      window.addEventListener('resize', onWindowResize, false);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      cssRenderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function rotateScene(deltaX, deltaY) {
+      const targetRotationY = scene.rotation.y + deltaX * rotationSpeed;
+      // Clamp Y rotation to prevent seeing behind walls
+      scene.rotation.y = Math.max(
+        -Math.PI / 3,
+        Math.min(Math.PI / 3, targetRotationY)
+      );
+
+      const targetRotationX = scene.rotation.x + deltaY * rotationSpeed;
+      scene.rotation.x = Math.max(
+        -Math.PI / 4,
+        Math.min(Math.PI / 4, targetRotationX)
+      );
+    }
+
+    function onMouseDown(event) {
+      // Start rotating the scene
+      isDragging = true;
+      previousMousePosition.x = event.clientX;
+      previousMousePosition.y = event.clientY;
+    }
+
+
+    function onMouseMove(event) {
+      if (!isDragging) {
+        return;
+      }
+
+      const deltaX = event.clientX - previousMousePosition.x;
+      const deltaY = event.clientY - previousMousePosition.y;
+      rotateScene(deltaX, deltaY);
+      previousMousePosition.x = event.clientX;
+      previousMousePosition.y = event.clientY;
+    }
+
+
+    function onMouseUp() {
+      isDragging = false;
+    }
+
+    function onTouchStart(event) {
+      if (event.touches.length === 1) {
+        isDragging = true;
+        previousMousePosition.x = event.touches[0].clientX;
+        previousMousePosition.y = event.touches[0].clientY;
+      }
+      event.preventDefault();
+    }
+
+    function onTouchEnd() {
+      isDragging = false;
+    }
+
+    function onTouchMove(event) {
+      if (!isDragging || event.touches.length !== 1) return;
+      const deltaX = event.touches[0].clientX - previousMousePosition.x;
+      const deltaY = event.touches[0].clientY - previousMousePosition.y;
+      rotateScene(deltaX, deltaY);
+      previousMousePosition.x = event.touches[0].clientX;
+      previousMousePosition.y = event.touches[0].clientY;
+      event.preventDefault();
+    }
+
+    // ========== ANIMATION LOOP ==========
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      animationOffset += 0.01;
+
+      // Update wall canvases
+      const backCtx = document.getElementById('backWallCanvas').getContext('2d');
+      drawBackWall(backCtx, WALLTEXTUREWIDTH, WALLTEXTUREHEIGHT, animationOffset);
+      backWallTexture.needsUpdate = true;
+
+      const leftCtx = document.getElementById('leftWallCanvas').getContext('2d');
+      drawLeftWall(leftCtx, WALLTEXTUREWIDTH, WALLTEXTUREHEIGHT, animationOffset);
+      leftWallTexture.needsUpdate = true;
+
+      const rightCtx = document.getElementById('rightWallCanvas').getContext('2d');
+      drawRightWall(rightCtx, WALLTEXTUREWIDTH, WALLTEXTUREHEIGHT, animationOffset);
+      rightWallTexture.needsUpdate = true;
+
+      const topCtx = document.getElementById('topWallCanvas').getContext('2d');
+      drawTopWall(topCtx, WALLTEXTUREWIDTH, WALLTEXTUREHEIGHT, animationOffset);
+      topWallTexture.needsUpdate = true;
+      // End wall canvas updates
+
+      const lightGroup = scene.getObjectByName('pointLightGroup');
+      const lightScreen = scene.getObjectByName('lightScreen');
+
+      // Update Backing Plate Shader
+      const backingMesh = scene.getObjectByName('screenBacking');
+      if (backingMesh && backingMesh.material.uniforms) {
+        backingMesh.material.uniforms.time.value += 0.05;
+      }
+
+      // Update Back Light Color
+      const backLight = scene.getObjectByName('screenBackLight');
+      if (backLight) {
+        const time = performance.now() * 0.001;
+        backLight.color.setHSL((time * 0.5) % 1, 1, 0.5);
+      }
+
+      if (lightGroup && lightScreen) {
+        lightGroup.rotation.y += 0.01;
+        const rotatingLight = lightGroup.getObjectByName('rotatingLight');
+        if (rotatingLight) {
+          const time = performance.now() * 0.0005;
+          const r = Math.sin(time * 0.7) * 0.5 + 0.5;
+          const g = Math.sin(time * 0.9) * 0.5 + 0.5;
+          const b = Math.sin(time * 1.1) * 0.5 + 0.5;
+          const dynamicColor = new THREE.Color(r, g, b);
+          rotatingLight.color.copy(dynamicColor);
+          lightScreen.material.color.copy(dynamicColor);
+        }
+      }
+
+      renderer.render(scene, camera);
+      cssRenderer.render(scene, camera);
+    }
+
+    window.onload = function () {
+      init();
+      animate();
+    };
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,3144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Giridhar Pai">
+    <meta name="description"
+        content="Giridhar Pai - Cyber Security Student | AWS Certified Security Specialist | Hackathon Winner">
+    <meta name="keywords" content="cybersecurity, portfolio, security analyst, splunk, owasp, Giridhar Pai">
+    <meta property="og:title" content="Giridhar Pai - Cyber Security Portfolio">
+    <meta property="og:description" content="Giridhar Pai - Cyber Security Student | AWS Certified Security Specialist | Hackathon Winner">
+    <meta property="og:image" content="images/profile.JPG">
+    <meta property="og:url" content="https://your-website-url.com">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>GIRIDHAR PAI - Security Operations Center</title>
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Fira+Code:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <!-- Security Headers Simulation -->
+    <!-- Content Security Policy: Restricts sources to approved domains (Google Fonts, FontAwesome, etc.) -->
+    <!-- Security Headers (Relaxed) -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141b2d;
+            --bg-card: #1a2332;
+            --accent-cyan: #00d9ff;
+            --accent-orange: #ff9500;
+            --accent-green: #00ff88;
+            --accent-red: #ff3366;
+            --text-primary: #ffffff;
+            --text-secondary: #8b9dc3;
+            --text-muted: #5a6b8c;
+            --border-glow: rgba(0, 217, 255, 0.5);
+            --grid-lines: rgba(0, 217, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            border: 3px solid var(--accent-cyan);
+            min-height: 100vh;
+            box-shadow: inset 0 0 30px rgba(0, 217, 255, 0.2);
+            position: relative;
+        }
+
+        /* Animated Background */
+        #network-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Top Status Bar */
+        .status-bar {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent-cyan);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.green {
+            background: var(--accent-green);
+        }
+
+        .status-dot.cyan {
+            background: var(--accent-cyan);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 40px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .panel::before,
+        .panel::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-cyan);
+        }
+
+        .panel::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .panel::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .operator-profile h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            white-space: nowrap;
+        }
+
+        .operator-profile .title {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .operator-profile .typing-text::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.3), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            margin-top: 30px;
+            background: transparent;
+            border: 2px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-cyan);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            color: var(--bg-primary);
+            box-shadow: 0 0 20px var(--border-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        /* Threat Feed */
+        .threat-feed {
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-orange);
+            border-left: 3px solid var(--accent-orange);
+            padding: 20px;
+            margin: 40px 0;
+            max-height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .threat-feed h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feed-content {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            animation: scroll-up 20s linear infinite;
+        }
+
+        .feed-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--grid-lines);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feed-item .icon {
+            color: var(--accent-cyan);
+        }
+
+        @keyframes scroll-up {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+        /* Section Styles */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-header::before {
+            content: '';
+            width: 50px;
+            height: 3px;
+            background: var(--accent-cyan);
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px var(--border-glow);
+            transform: translateY(-5px);
+        }
+
+        .info-card h4 {
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .info-card p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent-cyan);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 25px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            border: 3px solid var(--bg-primary);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .timeline-item h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+        }
+
+        .timeline-item .duration {
+            color: var(--accent-orange);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        /* Achievement Cards */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .achievement-card {
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card.critical {
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .achievement-card.high {
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .achievement-card.medium {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .achievement-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 51, 102, 0.2);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .achievement-badge.high {
+            background: rgba(255, 149, 0, 0.2);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .achievement-badge.medium {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        /* Skills Arsenal */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .skill-category {
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 30px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .skill-category h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px 0;
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 12px 25px;
+            background: #ffffff;
+            color: #0a0e1a;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border: none;
+            /* Removing old border */
+        }
+
+        .skill-list li:hover {
+            background: var(--accent-cyan);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        .skill-list li i {
+            font-size: 1.2rem;
+        }
+
+        .skill-list li::before {
+            content: none;
+        }
+
+        /* Projects */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .project-card::before {
+            content: 'ACTIVE';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+        }
+
+        .project-card.inactive::before {
+            content: 'INACTIVE';
+            background: rgba(255, 51, 102, 0.2);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        /* Research */
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .research-card {
+            background: rgba(10, 14, 26, 0.5);
+            border: 1px dashed var(--accent-red);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .research-card:hover {
+            background: rgba(255, 51, 102, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
+        }
+
+        .research-card i {
+            font-size: 3rem;
+            color: var(--accent-red);
+            margin-bottom: 20px;
+        }
+
+        .research-card h3 {
+            color: var(--accent-red);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+        }
+
+        .research-card.locked {
+            border-color: var(--accent-orange);
+            background: rgba(255, 149, 0, 0.1);
+        }
+
+        .research-card.locked i,
+        .research-card.locked h3 {
+            color: var(--accent-orange);
+        }
+
+        .project-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+        }
+
+        .project-card p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 30px var(--border-glow);
+        }
+
+        .service-card i {
+            font-size: 3rem;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        /* Blog */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .blog-card {
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            border-left: 3px solid var(--accent-orange);
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .blog-card::before {
+            content: 'CLASSIFIED';
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 149, 0, 0.2);
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .blog-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+        }
+
+        /* Contact */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--grid-lines);
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--grid-lines);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* Terminal */
+        .terminal {
+            background: #000;
+            border: 2px solid var(--accent-cyan);
+            padding: 20px;
+            margin: 60px 0 40px;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 0 30px var(--border-glow);
+        }
+
+        .terminal-header {
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terminal-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terminal-input span {
+            color: var(--accent-green);
+        }
+
+        .terminal-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--accent-cyan);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            box-shadow: 0 0 20px var(--border-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid,
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operator-profile h1 {
+                font-size: 2rem;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-bar .container {
+                justify-content: center;
+            }
+
+            .projects-grid,
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievement-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            section {
+                padding: 40px 0;
+            }
+
+            .section-header {
+                font-size: 2rem;
+            }
+        }
+
+        /* Glitch Effect Class */
+        .glitch-mode {
+            position: relative;
+            color: var(--text-primary);
+            font-weight: 900;
+            /* text-transform: uppercase; inherited */
+            animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+        }
+
+        .glitch-mode::before,
+        .glitch-mode::after {
+            content: attr(data-glitch);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+        }
+
+        .glitch-mode::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--accent-red);
+            clip: rect(44px, 1200px, 56px, 0);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+
+        .glitch-mode::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--accent-cyan);
+            clip: rect(44px, 1200px, 56px, 0);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% {
+                clip: rect(30px, 9999px, 10px, 0);
+            }
+
+            20% {
+                clip: rect(80px, 9999px, 90px, 0);
+            }
+
+            40% {
+                clip: rect(10px, 9999px, 50px, 0);
+            }
+
+            60% {
+                clip: rect(40px, 9999px, 20px, 0);
+            }
+
+            80% {
+                clip: rect(70px, 9999px, 60px, 0);
+            }
+
+            100% {
+                clip: rect(20px, 9999px, 80px, 0);
+            }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% {
+                clip: rect(10px, 9999px, 80px, 0);
+            }
+
+            20% {
+                clip: rect(50px, 9999px, 30px, 0);
+            }
+
+            40% {
+                clip: rect(90px, 9999px, 10px, 0);
+            }
+
+            60% {
+                clip: rect(20px, 9999px, 60px, 0);
+            }
+
+            80% {
+                clip: rect(60px, 9999px, 40px, 0);
+            }
+
+            100% {
+                clip: rect(40px, 9999px, 20px, 0);
+            }
+        }
+
+        @keyframes glitch-skew {
+            0% {
+                transform: skew(0deg);
+            }
+
+            20% {
+                transform: skew(-2deg);
+            }
+
+            40% {
+                transform: skew(2deg);
+            }
+
+            60% {
+                transform: skew(-1deg);
+            }
+
+            80% {
+                transform: skew(1deg);
+            }
+
+            100% {
+                transform: skew(0deg);
+            }
+        }
+
+        /* Loading Animation */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .loading-text {
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 400px;
+            height: 4px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-cyan);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-cyan);
+            width: 0%;
+            animation: load 3s ease-out forwards;
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        @keyframes load {
+            to {
+                width: 100%;
+            }
+        }
+
+        .ascii-art {
+            color: var(--accent-cyan);
+            font-size: 0.6rem;
+            line-height: 1;
+            margin-bottom: 30px;
+            text-align: center;
+            white-space: pre;
+            font-family: 'Fira Code', monospace;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Admin Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-cyan);
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px var(--border-glow);
+        }
+
+        .modal-header {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            color: var(--accent-red);
+            font-size: 1.5rem;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .admin-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .admin-form label {
+            display: block;
+            color: var(--accent-cyan);
+            font-family: 'Rajdhani', sans-serif;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .admin-form input,
+        .admin-form textarea,
+        .admin-form select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--grid-lines);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+        }
+
+        .admin-form input:focus,
+        .admin-form textarea:focus,
+        .admin-form select:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .admin-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .admin-form .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .admin-form .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .btn-cancel:hover {
+            background: var(--accent-red);
+            color: var(--bg-primary);
+        }
+
+        .project-card img,
+        .blog-card img,
+        .achievement-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 1px solid var(--grid-lines);
+        }
+
+        /* Site Logo */
+        .site-logo {
+            position: absolute;
+            top: 55px;
+            /* Adjust based on user feedback */
+            left: 30px;
+            z-index: 100;
+        }
+
+        .site-logo img {
+            height: 60px;
+            /* Increased size */
+            width: auto;
+            filter: drop-shadow(0 0 5px var(--accent-cyan));
+            border: 1px solid var(--accent-cyan);
+            background: rgba(10, 14, 26, 0.8);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        /* Profile Scanner Animation */
+        .profile-scan-container {
+            position: relative;
+            display: inline-block;
+            width: 150px;
+            height: 150px;
+            margin: 15px 0 25px 0;
+            border: 2px solid var(--accent-cyan);
+            overflow: hidden;
+            border-radius: 10px;
+            /* Slight rounded corners */
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+        }
+
+        .profile-scan-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            animation: profileScan 7s linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        @keyframes profileScan {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .site-logo {
+                top: 70px;
+                left: 20px;
+            }
+
+            .site-logo img {
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="ascii-art"
+            style="white-space: pre; line-height: 1.2; font-family: 'Fira Code', monospace; text-align: center; margin: 0 auto 30px auto; width: fit-content;">
+            ██╗ ██████╗ █████╗ ██████╗ ██╗███╗ ██╗ ██████╗
+            ██║ ██╔═══██╗██╔══██╗██╔══██╗██║████╗ ██║██╔════╝
+            ██║ ██║ ██║███████║██║ ██║██║██╔██╗ ██║██║ ███╗
+            ██║ ██║ ██║██╔══██║██║ ██║██║██║╚██╗██║██║ ██║
+            ███████╗╚██████╔╝██║ ██║██████╔╝██║██║ ╚████║╚██████╔╝
+            ╚══════╝ ╚═════╝ ╚═╝ ╚═╝╚═════╝ ╚═╝╚═╝ ╚═══╝ ╚═════╝
+        </div>
+        <div class="loading-text">INITIALIZING SECURITY PROTOCOLS...</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- Network Background -->
+    <canvas id="network-bg"></canvas>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="container">
+            <div class="status-item">
+                <span class="status-dot green"></span>
+                <span>SYSTEM STATUS: OPERATIONAL</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot cyan"></span>
+                <span>THREAT LEVEL: SECURE</span>
+            </div>
+            <div class="status-item">
+                <span>UPTIME: <span id="uptime">0d 0h 0m</span></span>
+            </div>
+            <div class="status-item">
+                <span id="clock">00:00:00</span>
+            </div>
+        </div>
+    </div>
+    <!-- Site Logo -->
+    <div class="site-logo">
+        <img src="images/logo.png" alt="Logo" loading="lazy" onerror="this.style.display='none'">
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="panel operator-profile">
+                    <h1 id="hero-name" data-original="GIRIDHAR PAI" data-glitch="WHITEHATWOLF">GIRIDHAR PAI</h1>
+                    <!-- Profile Picture with Scanner -->
+                    <div class="profile-scan-container">
+                        <!-- REPLACE WITH YOUR LINKEDIN IMAGE URL -->
+                        <img src="images/profile.JPG" alt="Giridhar Pai" id="profile-img" loading="lazy">
+                        <div class="scan-line"></div>
+                    </div>
+                    <p class="title typing-text">Cyber Security Student</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                        Proactive Learner | Proactive Researcher
+                    </p>
+                    <a href="#contact" class="btn">[ INITIATE_SCAN ]</a>
+                </div>
+
+                <div class="panel">
+                    <h2 style="font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); margin-bottom: 30px;">
+                        LIVE METRICS</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-value" data-target="5">0</span>
+                            <span class="metric-label">Projects</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" data-target="10">0</span>
+                            <span class="metric-label">Certifications</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" data-target="3">0</span>
+                            <span class="metric-label">Hackathon Wins</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threat Intelligence Feed -->
+            <div class="threat-feed">
+                <h3><i class="fas fa-satellite-dish"></i> THREAT INTELLIGENCE FEED</h3>
+                <div class="feed-content" id="feed-content">
+                    <div class="feed-item"><span class="icon">►</span> ALERT: AWS Security Certification Acquired -
+                        Specialist Level</div>
+                    <div class="feed-item"><span class="icon">►</span> EVENT: Hackathon Victory Detected - CIDECODE
+                        (DeepFake Detection System)</div>
+                    <div class="feed-item"><span class="icon">►</span> UPDATE: DefendX System Deployed - Real-Time
+                        Threat Monitoring Active</div>
+                    <div class="feed-item"><span class="icon">►</span> ACHIEVEMENT: IBM ICE DAY 2025 - 2nd Place CTF
+                        Competition</div>
+                    <div class="feed-item"><span class="icon">►</span> CERTIFICATION: Google Cybersecurity
+                        Specialization Completed</div>
+                    <div class="feed-item"><span class="icon">►</span> EVENT: CODE SPRINT Finalist - Top 7/65 Teams
+                    </div>
+                    <div class="feed-item"><span class="icon">►</span> TRAINING: Splunk Enterprise Security - 10
+                        Courses
+                        Completed</div>
+                    <div class="feed-item"><span class="icon">►</span> ALERT: Digital Forensics Essentials (DFE) -
+                        EC-Council Certified</div>
+                    <!-- Duplicate for seamless scroll -->
+                    <div class="feed-item"><span class="icon">►</span> ALERT: AWS Security Certification Acquired -
+                        Specialist Level</div>
+                    <div class="feed-item"><span class="icon">►</span> EVENT: Hackathon Victory Detected - CIDECODE
+                        (DeepFake Detection System)</div>
+                    <div class="feed-item"><span class="icon">►</span> UPDATE: DefendX System Deployed - Real-Time
+                        Threat Monitoring Active</div>
+                    <div class="feed-item"><span class="icon">►</span> ACHIEVEMENT: IBM ICE DAY 2025 - 2nd Place CTF
+                        Competition</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About / Operator Profile -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-user-shield"></i> OPERATOR PROFILE</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>Name</h4>
+                    <p>Giridhar Pai</p>
+                </div>
+                <div class="info-card">
+                    <h4>Title</h4>
+                    <p>Cyber Security Student</p>
+                </div>
+                <div class="info-card">
+                    <h4>Location</h4>
+                    <p>Dakshina Kannada, Karnataka, India</p>
+                </div>
+                <div class="info-card">
+                    <h4>Email</h4>
+                    <p>www.giridharpai@gmail.com</p>
+                </div>
+                <div class="info-card">
+                    <h4>LinkedIn</h4>
+                    <p><a href="https://www.linkedin.com/in/giridhar-pai-614b5a231" target="_blank"
+                            style="color: var(--accent-cyan);">View Profile</a></p>
+                </div>
+                <div class="info-card">
+                    <h4>GitHub</h4>
+                    <p><a href="https://github.com/Giri227" target="_blank"
+                            style="color: var(--accent-cyan);">@Giri227</a></p>
+                </div>
+                <div class="info-card">
+                    <h4>Instagram</h4>
+                    <p><a href="https://www.instagram.com/gp22_newlife/" target="_blank"
+                            style="color: var(--accent-cyan);">@gp22_newlife</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education -->
+    <section id="education">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-graduation-cap"></i> TRAINING RECORDS</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Yenepoya University</h3>
+                    <p class="duration">July 2023 - July 2026 (Pursuing)</p>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Degree:</strong> BCA, Cyber security ethical hacking digital forensic with IBM<br>
+                        Specialized training in cybersecurity, ethical hacking, and digital forensics in
+                        collaboration
+                        with IBM.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <h3>S N MOODBIDRI POLYTECHNIC</h3>
+                    <p class="duration">August 2019 - May 2022</p>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Degree:</strong> Diploma in Computer Science and Engineering<br>
+                        Foundation in computer science principles and engineering practices.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <h3>SVS VIDYAGIRI ENGLISH MEDIUM SCHOOL BANTWAL</h3>
+                    <p class="duration">2007 - 2016</p>
+                    <p style="color: var(--text-secondary);">
+                        SCHOOLING PRIMARY HIGHER
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience & Achievements -->
+    <section id="experience">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-trophy"></i> MISSION LOGS</h2>
+            <div class="achievement-grid">
+                <div class="achievement-card critical">
+                    <span class="achievement-badge">CRITICAL</span>
+                    <h3>CIDECODE Hackathon</h3>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Achievement:</strong> Consolation Prize Winner<br>
+                        Developed an AI-powered DeepFake Detection System with 99% accuracy using heatmap analysis
+                        and
+                        metadata extraction.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/cidecode_achievement.jpg', 'CIDECODE Hackathon', 'https://www.linkedin.com/feed/update/urn:li:activity:7307275735046533120/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7307275735046533120/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card critical">
+                    <span class="achievement-badge">CRITICAL</span>
+                    <h3>IBM ICE DAY 2025</h3>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Achievement:</strong> 2nd Place in CTF Competition & 2nd Runner-Up in 24-hour
+                        Hackathon<br>
+                        DefendX Project: Real-Time Threat Detection & Monitoring System
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/ibm_ice_2025.jpg', 'IBM ICE DAY 2025', 'https://www.linkedin.com/feed/update/urn:li:activity:7295455898964041732/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7295455898964041732/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card critical">
+                    <span class="achievement-badge">CRITICAL</span>
+                    <h3>CODE SPRINT Hackathon</h3>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Achievement:</strong> Finalist (Top 7 out of 65 teams) & Consolation Prize
+                        Winner<br>
+                        St. Aloysius University - Future City: AI-powered Urban Planning Application
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/code_sprint_final.jpg', 'CODE SPRINT Hackathon', 'https://www.linkedin.com/feed/update/urn:li:activity:7284087437109219328/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7284087437109219328/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card high">
+                    <span class="achievement-badge high">HIGH</span>
+                    <h3>OWASP Yenepoya</h3>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Role:</strong> Member (April 2024 - Present)<br>
+                        Participated in "Hackers Unveiled" cybersecurity event/challenge. Active contributor to
+                        security
+                        research and community initiatives.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/owasp_yenepoya.jpg', 'OWASP Yenepoya', 'https://owasp.org/www-chapter-yenepoya-institute/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://owasp.org/www-chapter-yenepoya-institute/" target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            CHAPTER_PAGE
+                            ]</a>
+                    </div>
+
+                </div>
+
+                <div class="achievement-card medium">
+                    <span class="achievement-badge medium">MEDIUM</span>
+                    <h3>AgileTEC In-Plant Training</h3>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Duration:</strong> 3 weeks, April 2022<br>
+                        Hands-on training in Android application development at AgileTEC, Mangaluru.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/agiletec_training.jpg', 'AgileTEC In-Plant Training', 'https://www.linkedin.com/feed/update/urn:li:activity:7245003891631628288/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7245003891631628288/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card high">
+                    <span class="achievement-badge high">HIGH</span>
+                    <h3>KAUSHALYAM 2022</h3>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Achievement:</strong> BEST PROJECT AWARD<br>
+                        Doctors Appointment Booking System - Award-winning web design project.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/kaushalyam_2022.jpg', 'KAUSHALYAM 2022', 'https://www.linkedin.com/feed/update/urn:li:activity:7245005569642618881/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7245005569642618881/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications -->
+    <section id="certifications">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-certificate"></i> SECURITY CLEARANCES</h2>
+            <div class="achievement-grid">
+                <div class="achievement-card">
+                    <h3>AWS Certified Security - Specialty</h3>
+                    <p style="color: var(--text-secondary);">
+                        SCS-C02: Expertise in Cloud Security, Threat Detection, and Secure Architecture Design
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/aws_security_cert.jpg', 'AWS Certified Security', 'https://www.linkedin.com/feed/update/urn:li:activity:7334965066775101440/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7334965066775101440/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <h3>Google Cybersecurity Specialization</h3>
+                    <p style="color: var(--text-secondary);">
+                        Completed: February 27, 2025<br>
+                        Comprehensive cybersecurity training covering security fundamentals, network security, and
+                        incident response.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/google_cybersecurity.jpg', 'Google Cybersecurity Specialization', 'https://www.linkedin.com/feed/update/urn:li:activity:7300890577946980352/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7300890577946980352/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <h3>Digital Forensics Essentials (DFE)</h3>
+                    <p style="color: var(--text-secondary);">
+                        EC-Council | Completed: December 25, 2023<br>
+                        Professional certification in digital forensics and investigation techniques.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/dfe_cert.jpg', 'Digital Forensics Essentials', 'https://www.linkedin.com/feed/update/urn:li:activity:7251998295466680320/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7251998295466680320/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.75rem;">[
+                            VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <h3>Splunk Training - 10 Courses</h3>
+                    <p style="color: var(--text-secondary);">
+                        SOAR Applications, Enterprise Security, Defense Analyst<br>
+                        Splunk: The Complete Course from Zero to Hero 2022
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openSplunkGallery('https://www.linkedin.com/feed/update/urn:li:activity:7334959777321504768/')">[
+                            VIEW 10 CERTIFICATES ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7334959777321504768/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange);">[ VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <h3>Deloitte Australia</h3>
+                    <p style="color: var(--text-secondary);">
+                        Cyber Job Simulation Internship<br>
+                        Practical experience in enterprise cybersecurity operations.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/deloitte_internship.jpg', 'Deloitte Australia Internship', 'https://forage-uploads-prod.s3.amazonaws.com/completion-certificates/9PBTqmSxAf6zZTseP/E9pA6qsdbeyEkp3ti_9PBTqmSxAf6zZTseP_8N67DenCKrcyu63gC_1750734197381_completion_certificate.pdf')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://forage-uploads-prod.s3.amazonaws.com/completion-certificates/9PBTqmSxAf6zZTseP/E9pA6qsdbeyEkp3ti_9PBTqmSxAf6zZTseP_8N67DenCKrcyu63gC_1750734197381_completion_certificate.pdf"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange);">[ VIEW_CERTIFICATE
+                            ]</a>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <h3>Domestic Data Entry Operator</h3>
+                    <p style="color: var(--text-secondary);">
+                        Hindi - SkillsTrainer<br>
+                        Professional certification in data management and entry operations.
+                    </p>
+                    <div class="preview-container" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn small"
+                            onclick="openImagePreview('images/data_entry_cert.jpg', 'Domestic Data Entry Operator', 'https://www.linkedin.com/feed/update/urn:li:activity:7245001386034126848/')">[
+                            VIEW_PREVIEW ]</button>
+                        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7245001386034126848/"
+                            target="_blank" class="btn small"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange);">[ VIEW_ON_LINKEDIN
+                            ]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Arsenal -->
+    <section id="skills">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-shield-alt"></i> ARSENAL</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>🔴 OFFENSIVE SECURITY</h3>
+                    <ul class="skill-list">
+                        <li><i class="fas fa-bug"></i> Penetration Testing (90%)</li>
+                        <li><i class="fas fa-user-secret"></i> Ethical Hacking</li>
+                        <li><i class="fas fa-network-wired"></i> Network Security</li>
+                        <li><i class="fas fa-key"></i> Cryptography</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>🟢 DEFENSIVE SECURITY</h3>
+                    <ul class="skill-list">
+                        <li><i class="fas fa-crosshairs"></i> Proactive Threat Hunting</li>
+                        <li><i class="fas fa-shield-virus"></i> Threat Detection</li>
+                        <li><i class="fas fa-chart-line"></i> SIEM</li>
+                        <li><i class="fas fa-eye"></i> IDS/IPS</li>
+                        <li><i class="fas fa-exclamation-triangle"></i> Risk Management</li>
+                        <li><i class="fas fa-cogs"></i> SOAR Applications</li>
+                        <li><i class="fas fa-chart-pie"></i> Defense Analysis</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>☁️ CLOUD SECURITY</h3>
+                    <ul class="skill-list">
+                        <li><i class="fab fa-aws"></i> AWS Security</li>
+                        <li><i class="fas fa-archway"></i> Secure Architecture</li>
+                        <li><i class="fas fa-id-card"></i> IAM</li>
+                        <li><i class="fas fa-user-lock"></i> Secrets Manager</li>
+                        <li><i class="fas fa-shield-alt"></i> AWS Shield</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>🔍 DIGITAL FORENSICS & AI</h3>
+                    <ul class="skill-list">
+                        <li><i class="fas fa-user-check"></i> DeepFake Detection</li>
+                        <li><i class="fas fa-fire"></i> Heatmap Analysis</li>
+                        <li><i class="fas fa-file-code"></i> Metadata Extraction</li>
+                        <li><i class="fas fa-search"></i> Digital Forensics</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>💻 PROGRAMMING</h3>
+                    <ul class="skill-list">
+                        <li><i class="fab fa-python"></i> Python</li>
+                        <li><i class="fab fa-java"></i> Java</li>
+                        <li><i class="fas fa-code"></i> C++</li>
+                        <li><i class="fas fa-terminal"></i> C</li>
+                        <li><i class="fab fa-js"></i> JavaScript</li>
+                    </ul>
+                </div>
+
+                <div class="skill-category">
+                    <h3>🛠️ TOOLS & PLATFORMS</h3>
+                    <ul class="skill-list">
+                        <li><i class="fas fa-chart-bar"></i> Splunk</li>
+                        <li><i class="fab fa-html5"></i> HTML & CSS</li>
+                        <li><i class="fab fa-linux"></i> Linux</li>
+                        <li><i class="fas fa-database"></i> SQL</li>
+                        <li><i class="fab fa-android"></i> Android Dev</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-rocket"></i> DEPLOYED SYSTEMS</h2>
+            <div class="projects-grid">
+                <div class="project-card inactive">
+                    <h3>AI-powered DeepFake Detection System</h3>
+                    <p>CIDECODE Hackathon Project - Consolation Prize Winner</p>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        Advanced AI system achieving 99% accuracy in detecting deepfake media using heatmap analysis
+                        and
+                        metadata extraction.
+                    </p>
+                </div>
+
+                <div class="project-card inactive">
+                    <h3>DefendX: Real-Time Threat Detection</h3>
+                    <p>IBM ICE DAY 2025 Hackathon - 2nd Runner-Up</p>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        Comprehensive real-time threat detection and monitoring system designed for enterprise
+                        security
+                        operations.
+                    </p>
+                </div>
+
+                <div class="project-card inactive">
+                    <h3>Future City: AI Urban Planning</h3>
+                    <p>CODE SPRINT Hackathon - Finalist</p>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        AI-powered urban planning application leveraging machine learning for smart city
+                        development.
+                    </p>
+                </div>
+
+                <div class="project-card">
+                    <h3>Password Strength Checker</h3>
+                    <p>Cybersecurity Tool</p>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        Security tool for analyzing and validating password strength using advanced algorithms.
+                    </p>
+                </div>
+
+                <div class="project-card">
+                    <h3>Doctors Appointment Booking System</h3>
+                    <p>KAUSHALYAM 2022 - BEST PROJECT AWARD</p>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        Award-winning web design project for streamlined healthcare appointment management.
+                    </p>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Classified Research -->
+    <section id="research">
+        <div class="container">
+            <h2 class="section-header" style="color: var(--accent-red);"><i class="fas fa-user-secret"></i>
+                CLASSIFIED
+                ARCHIVES</h2>
+            <div class="research-grid" id="research-grid">
+                <!-- Admin added content will appear here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-cogs"></i> OPERATIONAL CAPABILITIES</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-shield-virus"></i>
+                    <h3>Cyber Security</h3>
+                    <p style="color: var(--text-secondary);">Security audits, penetration testing, threat analysis
+                    </p>
+                </div>
+
+                <div class="service-card">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>Networking & Security</h3>
+                    <p style="color: var(--text-secondary);">Network infrastructure design, secure configuration,
+                        traffic monitoring</p>
+                </div>
+
+                <div class="service-card">
+                    <i class="fas fa-laptop-code"></i>
+                    <h3>Web Development</h3>
+                    <p style="color: var(--text-secondary);">Full-stack web application development</p>
+                </div>
+
+                <div class="service-card">
+                    <i class="fas fa-code"></i>
+                    <h3>Web Design</h3>
+                    <p style="color: var(--text-secondary);">Modern, responsive web design solutions</p>
+                </div>
+
+                <div class="service-card">
+                    <i class="fas fa-camera"></i>
+                    <h3>Photography</h3>
+                    <p style="color: var(--text-secondary);">Professional photography services</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog -->
+    <section id="blog">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-file-alt"></i> INTELLIGENCE REPORTS</h2>
+            <div class="blog-grid">
+                <div class="blog-card">
+                    <img src="https://placehold.co/600x300/0a0e1a/00d9ff?text=THREAT+HUNTING" alt="Threat Hunting" loading="lazy"
+                        style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 15px; border: 1px solid var(--accent-cyan);">
+                    <h3>The Aggressive Defender: A Technical Guide to Proactive Threat Hunting</h3>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        Comprehensive technical guide on proactive threat hunting methodologies and defensive
+                        security
+                        strategies.
+                    </p>
+                    <a href="https://medium.com/@giridharpai22/the-aggressive-defender-a-technical-guide-to-proactive-threat-hunting-️-️-e750f788f0c8"
+                        target="_blank" class="btn small"
+                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 15px;">[ PREVIEW_REPORT ]</a>
+                </div>
+
+                <div class="blog-card">
+                    <img src="https://placehold.co/600x300/0a0e1a/00d9ff?text=OWASP+HACKERS" alt="OWASP Hackers" loading="lazy"
+                        style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 15px; border: 1px solid var(--accent-cyan);">
+                    <h3>OWASP Yenepoya Hackers Unveiled Post</h3>
+                    <p style="color: var(--text-secondary); margin-top: 15px;">
+                        Insights and learnings from the OWASP Yenepoya "Hackers Unveiled" cybersecurity challenge.
+                    </p>
+                    <a href="https://www.linkedin.com/posts/owasp-yenepoya_cybersecurity-hackersunveiled-activity-7189682631402311680-8hji?utm_source=share&utm_medium=member_ios&rcm=ACoAADoDb_ABUuupVIq_mocXdB0cdUc9Ar0lfsc"
+                        target="_blank" class="btn small"
+                        style="margin-top: 20px; font-size: 0.8rem; padding: 8px 15px;">[ PREVIEW_REPORT ]</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-header"><i class="fas fa-satellite-dish"></i> SECURE CHANNEL</h2>
+            <div class="contact-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">[ SEND_MESSAGE ]</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Terminal -->
+    <div class="container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <i class="fas fa-terminal"></i> COMMAND INTERFACE
+            </div>
+            <div class="terminal-input">
+                <span>root@giridhar:~$</span>
+                <input type="text" id="terminal-input" placeholder="Type 'help' for commands...">
+            </div>
+            <div id="terminal-output" style="margin-top: 15px; color: var(--accent-green);"></div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>🔒 ADMIN PANEL - ADD CONTENT</span>
+                <span class="modal-close" onclick="closeAdminModal()">&times;</span>
+            </div>
+            <form class="admin-form" id="adminForm">
+                <div class="form-group">
+                    <label>Content Type</label>
+                    <select id="contentType" required>
+                        <option value="">Select Type</option>
+                        <option value="research">Confidential Research</option>
+                        <option value="blog">Blog Post</option>
+                        <option value="achievement">Achievement</option>
+                        <option value="project">Project</option>
+                        <option value="certification">Certification</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="contentTitle" required placeholder="Enter title...">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="contentDescription" required placeholder="Enter description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Image Source Selection</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-size: 0.75rem; color: var(--accent-cyan);">LOCAL ASSET PATH</label>
+                            <input type="text" id="contentPath" placeholder="images/cert.jpg" oninput="updateAdminPreview()">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.75rem; color: var(--accent-orange);">EXTERNAL PLATFORM
+                                URL</label>
+                            <input type="url" id="contentImage" placeholder="https://..."
+                                oninput="updateAdminPreview()">
+                        </div>
+                    </div>
+                    <div id="adminImagePreviewContainer"
+                        style="margin-top: 10px; text-align: center; display: none; border: 1px dashed var(--grid-lines); padding: 5px;">
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 5px;">LIVE
+                            PREVIEW</span>
+                        <img id="adminImagePreview" src=""
+                            style="max-height: 100px; border: 1px solid var(--accent-cyan);">
+                    </div>
+                    <small style="color: var(--text-muted); font-size: 0.85rem;">
+                        <i class="fas fa-info-circle"></i> <strong>Note:</strong> Local paths work once you manually
+                        move the file to your folder. External URLs show instantly.
+                    </small>
+                </div>
+
+                <div class="form-group" id="priorityGroup" style="display: none;">
+                    <label>Priority Level</label>
+                    <select id="contentPriority">
+                        <option value="critical">CRITICAL</option>
+                        <option value="high">HIGH</option>
+                        <option value="medium">MEDIUM</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-cancel" onclick="closeAdminModal()">[ CANCEL ]</button>
+                    <button type="submit" class="btn" id="submitBtn">[ ADD_CONTENT ]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="admin-modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>✏️ EDIT MODE - SELECT CONTENT</span>
+                <span class="modal-close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div id="editContentList" style="max-height: 60vh; overflow-y: auto;">
+                <!-- Content list will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form Modal -->
+    <div class="admin-modal" id="editFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>✏️ EDITING CONTENT</span>
+                <span class="modal-close" onclick="closeEditFormModal()">&times;</span>
+            </div>
+            <form class="admin-form" id="editForm">
+                <input type="hidden" id="editIndex">
+                <input type="hidden" id="editType">
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editDescription" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Image Source Selection</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-size: 0.75rem; color: var(--accent-cyan);">LOCAL ASSET PATH</label>
+                            <input type="text" id="editPath" placeholder="images/cert.jpg" oninput="updateEditPreview()">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.75rem; color: var(--accent-orange);">EXTERNAL PLATFORM
+                                URL</label>
+                            <input type="url" id="editImage" placeholder="https://..." oninput="updateEditPreview()">
+                        </div>
+                    </div>
+                    <div id="editImagePreviewContainer"
+                        style="margin-top: 10px; text-align: center; display: none; border: 1px dashed var(--grid-lines); padding: 5px;">
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 5px;">CURRENT
+                            PREVIEW</span>
+                        <img id="editImagePreview" src=""
+                            style="max-height: 100px; border: 1px solid var(--accent-cyan);">
+                    </div>
+                </div>
+
+                <div class="form-group" id="editPriorityGroup" style="display: none;">
+                    <label>Priority Level</label>
+                    <select id="editPriority">
+                        <option value="critical">CRITICAL</option>
+                        <option value="high">HIGH</option>
+                        <option value="medium">MEDIUM</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-cancel" onclick="closeEditFormModal()">[ CANCEL ]</button>
+                    <button type="button" class="btn"
+                        style="background: var(--accent-red); border-color: var(--accent-red);"
+                        onclick="deleteContent()">[ DELETE ]</button>
+                    <button type="submit" class="btn">[ UPDATE ]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/giridhar-pai-614b5a231" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://github.com/Giri227" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.instagram.com/gp22_newlife/" target="_blank" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="mailto:giridharpai@gmail.com" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+            <p style="color: var(--text-secondary); font-family: 'Fira Code', monospace;">
+                &copy; <span id="year"></span> GIRIDHAR PAI | SECURITY OPERATIONS CENTER | ALL SYSTEMS OPERATIONAL
+            </p>
+        </div>
+    </footer>
+
+    <!-- Password Modal -->
+    <div class="admin-modal" id="passwordModal" style="z-index: 2000;">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="justify-content: center;">
+                <span>🔒 AUTHENTICATION REQUIRED</span>
+                <span class="modal-close" onclick="closePasswordModal()">&times;</span>
+            </div>
+            <div style="padding: 20px;">
+                <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent-orange); margin-bottom: 20px;"></i>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">This file is classified. Enter admin
+                    password to decrypt.</p>
+                <input type="password" id="researchPassword" placeholder="Enter Password"
+                    style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--accent-cyan); color: #fff; margin-bottom: 20px; text-align: center;">
+                <button class="btn" onclick="verifyUnlockPassword()" style="width: 100%;">[ UNLOCK_FILE ]</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal (for Research) -->
+    <div class="admin-modal" id="viewModal" style="z-index: 2000;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="viewTitle">📄 CLASSIFIED DOCUMENT</span>
+                <span class="modal-close" onclick="closeViewModal()">&times;</span>
+            </div>
+            <div id="viewContent" style="padding: 20px;">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+            }, 800);
+        });
+
+
+
+        // Identity Glitch Effect (Giridhar Pai <-> WhiteHatWolf)
+        const heroName = document.getElementById('hero-name');
+        setInterval(() => {
+            // Trigger Glitch
+            heroName.classList.add('glitch-mode');
+            heroName.textContent = heroName.getAttribute('data-glitch');
+            heroName.style.color = 'var(--accent-red)'; // Optional: Change color during glitch
+
+            // Revert after 1 second (vanish/glitch duration)
+            setTimeout(() => {
+                heroName.classList.remove('glitch-mode');
+                heroName.textContent = heroName.getAttribute('data-original');
+                heroName.style.color = 'var(--accent-cyan)';
+            }, 1000); // Glitch lasts 1s
+            // Cycle is 7s total (6s normal + 1s glitch)? Or 7s interval? User said "every 7 sec".
+        }, 7000);
+
+        // Network Background Animation
+        const canvas = document.getElementById('network-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(0, 217, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(0, 217, 255, ${0.2 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        let animationFrameId;
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            connectParticles();
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        const startAnimation = () => {
+            if (!animationFrameId) {
+                animate();
+            }
+        };
+
+        const stopAnimation = () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    startAnimation();
+                } else {
+                    stopAnimation();
+                }
+            });
+        });
+
+        observer.observe(canvas);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Uptime Counter
+        let startTime = Date.now();
+        function updateUptime() {
+            const elapsed = Date.now() - startTime;
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('uptime').textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+        setInterval(updateUptime, 60000);
+        updateUptime();
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.metric-value');
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            let count = 0;
+            const increment = target / 100;
+
+            const updateCounter = () => {
+                if (count < target) {
+                    count += increment;
+                    counter.textContent = Math.ceil(count);
+                    setTimeout(updateCounter, 20);
+                } else {
+                    counter.textContent = target + '+';
+                }
+            };
+
+            setTimeout(updateCounter, 3000);
+        });
+
+        // Terminal Commands
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        const commands = {
+            help: 'Available commands: help, skills, projects, contact, clear, about',
+            skills: 'Skills: AWS Security, Penetration Testing, Threat Hunting, Python, Java, Splunk, SIEM, Digital Forensics',
+            projects: 'Projects: DeepFake Detection System, DefendX, Future City, Password Strength Checker',
+            contact: 'Email: giridharpai@gmail.com | LinkedIn: giridhar-pai-614b5a231',
+            about: 'Giridhar Pai - Cyber Security Student | AWS Certified | Hackathon Champion',
+            clear: ''
+        };
+
+        let awaitingPassword = false;
+        let pendingCommand = null;
+        const ADMIN_PASS = 'Pa$$w0rd';
+
+        // Message Listener for Identity Name
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'VISITOR_ID') {
+                const name = event.data.name;
+                localStorage.setItem('current_visitor_name', name);
+
+                // Update names in both local and global logs
+                const logs = JSON.parse(localStorage.getItem('visitor_logs') || '[]');
+                if (logs.length > 0) {
+                    // Assuming the last log is the current session
+                    logs[logs.length - 1].name = name;
+                    localStorage.setItem('visitor_logs', JSON.stringify(logs));
+                    console.log('Local Log Updated with Name:', name);
+                }
+
+                // Global update
+                const currentLogId = sessionStorage.getItem('current_log_id');
+                if (globalMode && db && currentLogId) {
+                    db.collection("visitors").doc(currentLogId).update({ name: name })
+                        .then(() => console.log("Global log updated with identity:", name))
+                        .catch(e => console.error("Identity update failed", e));
+                }
+            }
+        });
+
+        // ========== GLOBAL INTELLIGENCE (FIREBASE) ==========
+
+        // 2. PASTE YOUR KEYS HERE TO ACTIVATE GLOBAL MODE
+        // Get these from: console.firebase.google.com -> Create Project -> Add Web App
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_9F17cRybT_k3se4wafipZuJC7S_4U0w",
+            authDomain: "giridhar-pai-portfolio.firebaseapp.com",
+            projectId: "giridhar-pai-portfolio",
+            storageBucket: "giridhar-pai-portfolio.firebasestorage.app",
+            messagingSenderId: "38646200052",
+            appId: "1:38646200052:web:ace8f95ab05298a17c50a1"
+        };
+
+        let db = null;
+        let globalMode = false;
+
+        function initGlobalSystem() {
+            if (typeof firebase !== 'undefined' && firebaseConfig.apiKey.length > 0) {
+                try {
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    globalMode = true;
+                    console.log("[SYSTEM] GLOBAL INTELLIGENCE ONLINE (Firebase Connected)");
+                    return true;
+                } catch (e) {
+                    console.error("[SYSTEM] FIREBASE ERROR:", e);
+                    return false;
+                }
+            } else {
+                console.log("[SYSTEM] RUNNING IN LOCAL MODE (No API Keys Found)");
+                return false;
+            }
+        }
+
+        // Modified Visitor Logic (Hybrid)
+        function displayVisitorLogs() {
+            terminalOutput.innerHTML += `<div style="margin-bottom: 5px; color: var(--accent-cyan);">[ INITIALIZING LOG RETRIEVAL PROTOCOL... ]</div>`;
+
+            // GLOBAL MODE (Real-Time from Cloud)
+            if (globalMode && db) {
+                terminalOutput.innerHTML += `<div style="margin-bottom: 10px; color: var(--neon-purple);">>>> CONNECTING TO SATELLITE NETWORK... SUCCESS.</div>`;
+
+                // Real-time listener
+                db.collection("visitors").orderBy("timestamp", "desc").limit(50)
+                    .onSnapshot((snapshot) => {
+                        let rows = "";
+                        snapshot.forEach((doc) => {
+                            const log = doc.data();
+                            rows += buildLogRow(log);
+                        });
+                        updateLogTable(rows, snapshot.size, "GLOBAL");
+                    }, (error) => {
+                        console.error("Fetch error", error);
+                        terminalOutput.innerHTML += `<div style="color:red;">CONNECTION SEVERED.</div>`;
+                    });
+                return;
+            }
+
+            // LOCAL MODE (Fallback)
+            terminalOutput.innerHTML += `<div style="margin-bottom: 10px; color: var(--accent-yellow);">>>> SATELLITE OFFLINE. ACCESSING LOCAL ARCHIVES...</div>`;
+            const logs = JSON.parse(localStorage.getItem('visitor_logs') || '[]');
+
+            if (logs.length === 0) {
+                terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-red);">NO LOCAL LOGS FOUND.</span></div>`;
+                return;
+            }
+
+            let rows = "";
+            logs.reverse().forEach(log => {
+                rows += buildLogRow(log);
+            });
+            updateLogTable(rows, logs.length, "LOCAL");
+        }
+
+        function buildLogRow(log) {
+            return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 5px;">${new Date(log.timestamp).toLocaleString()}</td>
+                    <td style="padding: 5px; color: var(--accent-yellow);">${log.name || 'ANONYMOUS'}</td>
+                    <td style="padding: 5px; color: var(--accent-orange);">${log.ip || 'HIDDEN'}</td>
+                    <td style="padding: 5px;">${log.city || 'Unknown'}, ${log.country || 'Unknown'}</td>
+                 </tr>`;
+        }
+
+        function updateLogTable(rowsHTML, count, source) {
+            const tableHTML = `<div style="margin-bottom: 10px; border: 1px dashed var(--accent-cyan); padding: 10px; background: rgba(0,0,0,0.5);">
+                <h4 style="color: var(--accent-green); margin-bottom: 10px; border-bottom: 1px solid var(--grid-lines); padding-bottom: 5px;">[ ${source} VISITOR LOGS ]</h4>
+                <div style="max-height: 200px; overflow-y: auto;">
+                <table style="width: 100%; color: var(--text-secondary); font-size: 0.85rem; text-align: left; border-collapse: collapse;">
+                    <tr style="color: var(--accent-cyan);">
+                        <th style="padding: 5px;">TIME</th>
+                        <th style="padding: 5px;">IDENTITY</th>
+                        <th style="padding: 5px;">IP ADDRESS</th>
+                        <th style="padding: 5px;">LOCATION</th>
+                    </tr>
+                    ${rowsHTML}
+                </table></div></div>`;
+
+            // Remove previous table if updating in real-time? For terminal simplicity, we just append new block or replace last?
+            // Terminal usually appends. But for live feed, appending duplicates is messy. 
+            // We won't solve full terminal emulation re-render here. We just append the result once.
+            // Future updates might just console log or need a dedicated UI area.
+            // For now, simpler: Just Append.
+
+            // Actually, for "Real Time" to look good, we should perhaps replace the container if it exists.
+            const existingContainer = document.getElementById('live-log-container');
+            if (existingContainer) {
+                existingContainer.innerHTML = tableHTML;
+            } else {
+                terminalOutput.innerHTML += `<div id="live-log-container">${tableHTML}</div>`;
+                terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-green);">✓ DATA RETRIEVAL COMPLETE. ${count} RECORDS.</span></div>`;
+            }
+        }
+
+        // DATA CAPTURE
+        window.addEventListener('load', async () => {
+            // Initialize Firebase Logic
+            if (typeof firebase !== 'undefined') initGlobalSystem();
+
+            try {
+                if (!sessionStorage.getItem('logged_session')) {
+                    const response = await fetch('https://ipapi.co/json/');
+                    const data = await response.json();
+
+                    if (data.ip) {
+                        const logEntry = {
+                            ip: data.ip,
+                            city: data.city,
+                            country: data.country_name,
+                            isp: data.org,
+                            timestamp: new Date().toISOString(),
+                            userAgent: navigator.userAgent,
+                            name: localStorage.getItem('current_visitor_name') || 'Pending Identity'
+                        };
+
+                        // GLOBAL SAVE
+                        if (globalMode && db) {
+                            db.collection("visitors").add(logEntry)
+                                .then((docRef) => {
+                                    console.log("Logged to Global Database");
+                                    sessionStorage.setItem('current_log_id', docRef.id);
+                                })
+                                .catch((e) => console.error("Cloud Save Failed", e));
+                        }
+
+                        // LOCAL SAVE (Always backup)
+                        const logs = JSON.parse(localStorage.getItem('visitor_logs') || '[]');
+                        logs.push(logEntry);
+                        if (logs.length > 100) logs.shift();
+                        localStorage.setItem('visitor_logs', JSON.stringify(logs));
+
+                        sessionStorage.setItem('logged_session', 'true');
+                    }
+                }
+            } catch (error) {
+                console.error('Log failed:', error);
+            }
+        });
+
+        terminalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const inputVal = terminalInput.value.trim();
+
+                if (awaitingPassword) {
+                    // Password Check
+                    if (inputVal === ADMIN_PASS) {
+                        terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-green);">✓ ACCESS GRANTED</span></div>`;
+
+                        if (pendingCommand === 'add') {
+                            openAdminModal();
+                            terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-green);">🔒 ADMIN MODE ACTIVATED - Opening content management panel...</span></div>`;
+                        } else if (pendingCommand === 'reedit') {
+                            openEditModal();
+                            terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-orange);">✏️ EDIT MODE ACTIVATED - Select content to modify...</span></div>`;
+                        } else if (pendingCommand === 'visitors') {
+                            displayVisitorLogs();
+                        }
+                    } else {
+                        terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-red);">✖ ACCESS DENIED: INVALID PASSWORD</span></div>`;
+                    }
+
+                    // Reset State
+                    awaitingPassword = false;
+                    pendingCommand = null;
+                    terminalInput.type = 'text';
+                    terminalInput.value = '';
+                    terminalInput.placeholder = "Type 'help' for commands...";
+
+                } else {
+                    // Normal Command Processing
+                    const command = inputVal.toLowerCase();
+
+                    if (command === 'clear') {
+                        terminalOutput.innerHTML = '';
+                    } else if (command === 'add' || command === 'reedit' || command === 'visitors') {
+                        // Secret admin command -> Trigger Password Flow
+                        awaitingPassword = true;
+                        pendingCommand = command;
+                        terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-cyan);">$ ${command}</span><br><span style="color: var(--accent-orange);">🔒 SECURE COMMAND DETECTED. ENTER PASSWORD:</span></div>`;
+
+                        terminalInput.type = 'password';
+                        terminalInput.value = '';
+                        terminalInput.placeholder = 'Enter Password...';
+
+                    } else if (commands[command]) {
+                        terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-cyan);">$ ${command}</span><br>${commands[command]}</div>`;
+                    } else if (command) {
+                        terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-cyan);">$ ${command}</span><br><span style="color: var(--accent-red);">Command not found. Type 'help' for available commands.</span></div>`;
+                    }
+
+                    if (!awaitingPassword) {
+                        terminalInput.value = '';
+                    }
+                }
+
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+        });
+
+        // Admin Modal Functions
+        let isEditMode = false;
+        let editingIndex = -1;
+        let editingType = '';
+
+        function openAdminModal() {
+            isEditMode = false;
+            document.getElementById('submitBtn').textContent = '[ ADD_CONTENT ]';
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+            document.getElementById('adminForm').reset();
+            document.getElementById('priorityGroup').style.display = 'none';
+            isEditMode = false;
+            editingIndex = -1;
+            editingType = '';
+        }
+
+        // Edit Modal Functions
+        function openEditModal() {
+            const editList = document.getElementById('editContentList');
+            editList.innerHTML = '<h3 style="color: var(--accent-cyan); font-family: Orbitron; margin-bottom: 20px;">SELECT CONTENT TO EDIT</h3>';
+
+            const types = [
+                { key: 'blog', label: 'BLOG POSTS', icon: '📝' },
+                { key: 'achievement', label: 'ACHIEVEMENTS', icon: '🏆' },
+                { key: 'project', label: 'PROJECTS', icon: '🚀' },
+                { key: 'certification', label: 'CERTIFICATIONS', icon: '🎖️' }
+            ];
+
+            types.forEach(type => {
+                const items = JSON.parse(localStorage.getItem(`portfolio_${type.key}s`) || '[]');
+                if (items.length > 0) {
+                    editList.innerHTML += `<h4 style="color: var(--accent-orange); font-family: Rajdhani; margin: 20px 0 10px 0;">${type.icon} ${type.label}</h4>`;
+                    items.forEach((item, index) => {
+                        editList.innerHTML += `
+                            <div style="background: var(--bg-secondary); border: 1px solid var(--grid-lines); padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s;" 
+                                 onmouseover="this.style.borderColor='var(--accent-cyan)'" 
+                                 onmouseout="this.style.borderColor='var(--grid-lines)'"
+                                 onclick="editItem('${type.key}', ${index})">
+                                <strong style="color: var(--accent-cyan);">${item.title}</strong><br>
+                                <span style="color: var(--text-muted); font-size: 0.9rem;">${item.description.substring(0, 80)}...</span>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            if (editList.innerHTML === '<h3 style="color: var(--accent-cyan); font-family: Orbitron; margin-bottom: 20px;">SELECT CONTENT TO EDIT</h3>') {
+                editList.innerHTML += '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">No content available to edit. Use "add" command to create content first.</p>';
+            }
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function editItem(type, index) {
+            const items = JSON.parse(localStorage.getItem(`portfolio_${type}s`) || '[]');
+            const item = items[index];
+
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editType').value = type;
+            document.getElementById('editTitle').value = item.title;
+            document.getElementById('editDescription').value = item.description;
+            document.getElementById('editPath').value = item.imagePath || '';
+            document.getElementById('editImage').value = item.imageUrl || '';
+
+            updateEditPreview();
+
+            if (type === 'achievement' && item.priority) {
+                document.getElementById('editPriorityGroup').style.display = 'block';
+                document.getElementById('editPriority').value = item.priority;
+            } else {
+                document.getElementById('editPriorityGroup').style.display = 'none';
+            }
+
+            closeEditModal();
+            document.getElementById('editFormModal').classList.add('active');
+        }
+
+        function closeEditFormModal() {
+            document.getElementById('editFormModal').classList.remove('active');
+            document.getElementById('editForm').reset();
+        }
+
+        function deleteContent() {
+            if (!confirm('Are you sure you want to delete this content? This action cannot be undone.')) {
+                return;
+            }
+
+            const type = document.getElementById('editType').value;
+            const index = parseInt(document.getElementById('editIndex').value);
+
+            const key = `portfolio_${type}s`;
+            let items = JSON.parse(localStorage.getItem(key) || '[]');
+            items.splice(index, 1);
+            localStorage.setItem(key, JSON.stringify(items));
+
+            terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-red);">🗑️ DELETED: ${type.toUpperCase()} removed successfully! Refresh page to see changes.</span></div>`;
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+
+            closeEditFormModal();
+
+            alert('Content deleted! Please refresh the page to see the changes.');
+        }
+
+        // Show/hide priority field based on content type
+        document.getElementById('contentType').addEventListener('change', function () {
+            const priorityGroup = document.getElementById('priorityGroup');
+            if (this.value === 'achievement') {
+                priorityGroup.style.display = 'block';
+            } else {
+                priorityGroup.style.display = 'none';
+            }
+        });
+
+        // Handle add/edit form submission
+        document.getElementById('adminForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const type = document.getElementById('contentType').value;
+            const title = document.getElementById('contentTitle').value;
+            const description = document.getElementById('contentDescription').value;
+            const imagePath = document.getElementById('contentPath').value;
+            const imageUrl = document.getElementById('contentImage').value;
+            const priority = document.getElementById('contentPriority').value;
+
+            const newContent = {
+                title,
+                description,
+                imagePath,
+                imageUrl,
+                priority,
+                timestamp: new Date().toISOString()
+            };
+
+            // Save to localStorage
+            saveToLocalStorage(type, newContent);
+
+            if (type === 'research') {
+                location.reload();
+                return;
+            }
+
+            // Add content to appropriate section
+            addContentToPage(type, newContent);
+
+            // Show success message
+            terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-green);">✓ SUCCESS: ${type.toUpperCase()} added successfully!</span></div>`;
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+
+            closeAdminModal();
+        });
+
+        // Handle edit form submission
+        document.getElementById('editForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const type = document.getElementById('editType').value;
+            const index = parseInt(document.getElementById('editIndex').value);
+            const title = document.getElementById('editTitle').value;
+            const description = document.getElementById('editDescription').value;
+            const imagePath = document.getElementById('editPath').value;
+            const imageUrl = document.getElementById('editImage').value;
+            const priority = document.getElementById('editPriority').value;
+
+            const key = `portfolio_${type}s`;
+            let items = JSON.parse(localStorage.getItem(key) || '[]');
+
+            items[index] = {
+                title,
+                description,
+                imagePath,
+                imageUrl,
+                priority,
+                timestamp: items[index].timestamp // Keep original timestamp
+            };
+
+            localStorage.setItem(key, JSON.stringify(items));
+
+            terminalOutput.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-green);">✓ UPDATED: ${type.toUpperCase()} updated successfully! Refresh page to see changes.</span></div>`;
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+
+            closeEditFormModal();
+
+            alert('Content updated! Please refresh the page to see the changes.');
+        });
+
+        function addContentToPage(type, content, index = 0) {
+            // Input Sanitization to prevent XSS
+            const sanitize = (str) => {
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            };
+
+            content.title = sanitize(content.title || '');
+            content.description = sanitize(content.description || '');
+
+            const finalImageUrl = content.imagePath || content.imageUrl;
+
+            let container, cardHTML;
+
+            switch (type) {
+                case 'blog':
+                    container = document.querySelector('#blog .blog-grid');
+                    cardHTML = `
+                        <div class="blog-card">
+                            ${finalImageUrl ? `<img src="${finalImageUrl}" alt="${content.title}" onerror="this.style.display='none'">` : ''}
+                            <h3>${content.title}</h3>
+                            <p style="color: var(--text-secondary); margin-top: 15px;">${content.description}</p>
+                            ${finalImageUrl ? `<button class="btn small" style="margin-top:10px;" onclick="openImagePreview('${finalImageUrl}', '${content.title}')">[ VIEW_PREVIEW ]</button>` : ''}
+                        </div>
+                    `;
+                    break;
+
+                case 'achievement':
+                    container = document.querySelector('#experience .achievement-grid');
+                    const badgeClass = content.priority || 'medium';
+                    cardHTML = `
+                        <div class="achievement-card ${badgeClass}">
+                            <span class="achievement-badge ${badgeClass}">${(content.priority || 'medium').toUpperCase()}</span>
+                            ${finalImageUrl ? `<img src="${finalImageUrl}" alt="${content.title}" class="hidden-preview-img" style="display:none;" onerror="this.style.display='none'">` : ''}
+                            <h3>${content.title}</h3>
+                            <p style="color: var(--text-secondary);">${content.description}</p>
+                            ${finalImageUrl ? `<button class="btn small" style="margin-top:15px;" onclick="openImagePreview('${finalImageUrl}', '${content.title}')">[ VIEW_PREVIEW ]</button>` : ''}
+                        </div>
+                    `;
+                    break;
+
+                case 'project':
+                    container = document.querySelector('#projects .projects-grid');
+                    cardHTML = `
+                        <div class="project-card">
+                            ${finalImageUrl ? `<img src="${finalImageUrl}" alt="${content.title}" onerror="this.style.display='none'">` : ''}
+                            <h3>${content.title}</h3>
+                            <p style="color: var(--text-secondary); margin-top: 15px;">${content.description}</p>
+                            ${finalImageUrl ? `<button class="btn small" style="margin-top:10px;" onclick="openImagePreview('${finalImageUrl}', '${content.title}')">[ VIEW_PREVIEW ]</button>` : ''}
+                        </div>
+                    `;
+                    break;
+
+                case 'certification':
+                    container = document.querySelector('#certifications .achievement-grid');
+                    cardHTML = `
+                        <div class="achievement-card">
+                            ${finalImageUrl ? `<img src="${finalImageUrl}" alt="${content.title}" class="hidden-preview-img" style="display:none;" onerror="this.style.display='none'">` : ''}
+                            <h3>${content.title}</h3>
+                            <p style="color: var(--text-secondary);">${content.description}</p>
+                            ${finalImageUrl ? `<button class="btn small" style="margin-top:15px;" onclick="openImagePreview('${finalImageUrl}', '${content.title}')">[ VIEW_PREVIEW ]</button>` : ''}
+                        </div>
+                    `;
+                    break;
+
+                case 'research':
+                    container = document.querySelector('#research .research-grid');
+                    cardHTML = `
+                        <div class="research-card locked" onclick="unlockResearch(${index})">
+                            <i class="fas fa-lock"></i>
+                            <h3>LOCKED FILE</h3>
+                            <p>CLASSIFIED - AUTHENTICATION REQUIRED</p>
+                            <p style="font-size: 0.8rem; opacity: 0.7; color: var(--accent-red); margin-top: 10px;">${content.title}</p>
+                        </div>
+                    `;
+                    break;
+            }
+
+            if (container) {
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            }
+        }
+
+        function saveToLocalStorage(type, content) {
+            const key = `portfolio_${type}s`;
+            let items = JSON.parse(localStorage.getItem(key) || '[]');
+            items.push(content);
+            localStorage.setItem(key, JSON.stringify(items));
+        }
+
+        function loadFromLocalStorage() {
+            const types = ['research', 'blog', 'achievement', 'project', 'certification'];
+            types.forEach(type => {
+                const key = `portfolio_${type}s`;
+                const items = JSON.parse(localStorage.getItem(key) || '[]');
+
+                if (type === 'research' && items.length === 0) {
+                    const container = document.querySelector('#research .research-grid');
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary); border: 1px dashed var(--grid-lines); border-radius: 10px; background: rgba(10, 14, 26, 0.5);">
+                                <i class="fas fa-flask" style="font-size: 2rem; margin-bottom: 20px; color: var(--accent-cyan); opacity: 0.7;"></i>
+                                <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-family: 'Orbitron'; letter-spacing: 1px;">NO ARCHIVES FOUND</h4>
+                                <p style="font-family: 'Rajdhani', sans-serif; opacity: 0.8;">CLASSIFIED EXPERIMENTS ARE CURRENTLY UNDERWAY.<br>PENDING DATA UPLOAD PROTOCOLS...</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                items.forEach((item, index) => addContentToPage(type, item, index));
+            });
+        }
+
+        function updateAdminPreview() {
+            const path = document.getElementById('contentPath').value;
+            const url = document.getElementById('contentImage').value;
+            const preview = document.getElementById('adminImagePreview');
+            const container = document.getElementById('adminImagePreviewContainer');
+
+            const finalSrc = path || url;
+            if (finalSrc) {
+                preview.src = finalSrc;
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function updateEditPreview() {
+            const path = document.getElementById('editPath').value;
+            const url = document.getElementById('editImage').value;
+            const preview = document.getElementById('editImagePreview');
+            const container = document.getElementById('editImagePreviewContainer');
+
+            const finalSrc = path || url;
+            if (finalSrc) {
+                preview.src = finalSrc;
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        // Load saved content on page load
+        setTimeout(() => {
+            loadFromLocalStorage();
+        }, 1000);
+
+        // Form Submission - Mailto Link
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            const subject = `SECURE CHANNEL: New Message from ${name}`;
+            const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+
+            const mailtoLink = `mailto:giridharpai@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`; // No encodeURIComponent for body here to keep newlines simple or decode properly, actually standard is encoding. Let's stick to standard but %0D%0A works well in strings directly.
+
+            // Better to use window.open or location.href
+            window.location.href = `mailto:giridharpai@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+
+            // Visual feedback
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = '[ TRANSMISSION INITIATED... ]';
+            btn.style.color = 'var(--accent-green)';
+
+            setTimeout(() => {
+                alert('Secure channel opened in your default email client. Please click send to complete transmission.');
+                btn.textContent = originalText;
+                btn.style.color = '';
+                e.target.reset();
+            }, 1000);
+        });
+
+        // Research Logic
+        let pendingUnlockIndex = -1;
+
+        function unlockResearch(index) {
+            pendingUnlockIndex = index;
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('researchPassword').value = '';
+            document.getElementById('researchPassword').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            pendingUnlockIndex = -1;
+        }
+
+        function verifyUnlockPassword() {
+            const pass = document.getElementById('researchPassword').value;
+            if (pass === ADMIN_PASS) {
+                closePasswordModal();
+                openResearchContent(pendingUnlockIndex);
+            } else {
+                alert('ACCESS DENIED: INVALID CREDENTIALS');
+                document.getElementById('researchPassword').value = '';
+            }
+        }
+
+        function openResearchContent(index) {
+            const items = JSON.parse(localStorage.getItem('portfolio_researchs') || '[]');
+            const item = items[index];
+            if (item) {
+                document.getElementById('viewTitle').textContent = `📄 ${item.title.toUpperCase()}`;
+                document.getElementById('viewContent').innerHTML = `
+                    <div style="color: var(--accent-green); border-bottom: 1px solid var(--grid-lines); padding-bottom: 10px; margin-bottom: 20px;">
+                        <strong>STATUS:</strong> DECLASSIFIED<br>
+                        <strong>DATE:</strong> ${new Date(item.timestamp).toLocaleDateString()}
+                    </div>
+                    ${item.imageUrl ? `<img src="${item.imageUrl}" style="max-width: 100%; border-radius: 5px; margin-bottom: 20px; border: 1px solid var(--accent-cyan);">` : ''}
+                    <div style="font-family: 'Courier New', monospace; line-height: 1.6; white-space: pre-wrap; color: #fff;">${item.description}</div>
+                `;
+                document.getElementById('viewModal').classList.add('active');
+            }
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.remove('active');
+        }
+
+        // --- NEW IMAGE PREVIEW LOGIC ---
+        function openImagePreview(url, title, redirectUrl = null) {
+            const viewModal = document.getElementById('viewModal');
+            const viewTitle = document.getElementById('viewTitle');
+            const viewContent = document.getElementById('viewContent');
+
+            viewTitle.textContent = `📄 PREVIEW: ${title.toUpperCase()}`;
+
+            let redirectBtn = '';
+            if (redirectUrl) {
+                const btnLabel = redirectUrl.includes('linkedin.com') ? 'VIEW_ON_LINKEDIN' : (redirectUrl.includes('.pdf') ? 'VIEW_CERTIFICATE' : 'VIEW_ORIGINAL_LINK');
+                redirectBtn = `
+                    <div style="margin-top: 20px; text-align: center;">
+                        <a href="${redirectUrl}" target="_blank" class="btn" style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.8rem;">[ ${btnLabel} ]</a>
+                    </div>
+                `;
+            }
+
+            viewContent.innerHTML = `
+                <div style="text-align: center;">
+                    <img src="${url}" alt="${title}" loading="lazy" style="max-width: 100%; max-height: 70vh; border: 2px solid var(--accent-cyan); box-shadow: 0 0 20px var(--border-glow);" onerror="this.outerHTML='<p style=\'color:var(--accent-red);\'>IMAGE NOT FOUND: ${url}<br>Please place the image in the project directory.</p>'">
+                    ${redirectBtn}
+                </div>
+            `;
+            viewModal.classList.add('active');
+        }
+
+        function openSplunkGallery(redirectUrl = null) {
+            const viewModal = document.getElementById('viewModal');
+            const viewTitle = document.getElementById('viewTitle');
+            const viewContent = document.getElementById('viewContent');
+
+            viewTitle.textContent = `📄 SPLUNK CERTIFICATIONS (10 RECORDS)`;
+
+            let galleryHtml = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">';
+            for (let i = 1; i <= 10; i++) {
+                const imgName = `./splunk_${i}.jpg`;
+                galleryHtml += `
+                    <div style="border: 1px solid var(--grid-lines); padding: 10px; text-align: center; background: rgba(255,255,255,0.05);">
+                        <img src="${imgName}" alt="Splunk Cert ${i}" loading="lazy" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;" onerror="this.src='https://placehold.co/200x120/0a0e1a/00d9ff?text=SPLUNK+${i}'">
+                        <button class="btn small" style="font-size: 0.7rem; padding: 5px 10px;" onclick="openImagePreview('${imgName}', 'Splunk Certificate ${i}', '${redirectUrl}')">ENLARGE</button>
+                    </div>
+                `;
+            }
+            galleryHtml += '</div>';
+
+            if (redirectUrl) {
+                galleryHtml += `
+                    <div style="margin-top: 20px; text-align: center;">
+                        <a href="${redirectUrl}" target="_blank" class="btn" style="border-color: var(--accent-orange); color: var(--accent-orange); font-size: 0.8rem;">[ VIEW_ENTIRE_FEED_ON_LINKEDIN ]</a>
+                    </div>
+                `;
+            }
+
+            viewContent.innerHTML = galleryHtml;
+            viewModal.classList.add('active');
+        }
+
+        // Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // 🧹 SYSTEM CLEANUP PROTOCOL
+        // Automatically removes legacy/unwanted content requested by user
+        window.addEventListener('load', () => {
+            const projectsKey = 'portfolio_projects';
+            const raw = localStorage.getItem(projectsKey);
+            if (raw) {
+                const projects = JSON.parse(raw);
+                const initialLength = projects.length;
+                const cleanProjects = projects.filter(p => !p.title.includes('Advanced Security Scanner'));
+
+                if (cleanProjects.length !== initialLength) {
+                    localStorage.setItem(projectsKey, JSON.stringify(cleanProjects));
+                    console.log('✅ CLEANUP: Removed "Advanced Security Scanner"');
+
+                    // Notify user via terminal if it exists
+                    const termOut = document.getElementById('terminal-output');
+                    if (termOut) {
+                        setTimeout(() => {
+                            termOut.innerHTML += `<div style="margin-bottom: 10px;"><span style="color: var(--accent-green);">♻️ SYSTEM CLEANUP COMPLETED: "Advanced Security Scanner" removed from database.</span></div>`;
+                            termOut.scrollTop = termOut.scrollHeight;
+                        }, 2000);
+                    }
+                }
+            }
+        });
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
